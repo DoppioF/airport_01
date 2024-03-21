@@ -1,0 +1,52 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+		<p:outputPanel id="idChoosePassengersNumber" 
+						rendered="#{renderingBean.pageToRender eq renderingBean.reservationSubpage and flightBean.flightDto.arrivalDate ne null}" >
+      		<div align="center">
+				<br/><br/><br/>
+				<p:messages id="msgsPassengerNumber" 
+							showDetail="false" 
+							showSummary="true" 
+							autoUpdate="false"
+							rendered="#{not utilsBean.disablePassengersNumberInput}"
+							 />
+				<br/>
+				<h:outputLabel for="passengersInput" 
+								value="Seleziona il numero di passeggeri" 
+								style="font-size: 1.1rem; font-weight: bold; margin-bottom: 0.8rem;"/>
+				<br/><br/>
+				<p:inputNumber id="passengersInput" 
+								value="#{reservationBean.passengersNumber}" 
+								integerOnly="true" 
+								minValue="1" 
+								maxValue="#{flightBean.flightDto.availableSeats}" 
+								disabled="#{utilsBean.disablePassengersNumberInput}"
+								onkeypress="event.preventDefault(); return event.keyCode !== 13;"
+								>
+					<f:ajax render="confirmButton" 
+							event="keyup" 
+							listener="#{reservationBean.handleChoosePassengersNumber}" 
+							update="userDom"/>
+				</p:inputNumber>
+				<br/>
+				<h:outputLabel for="passengersInput" value="(max: #{flightBean.flightDto.availableSeats})"/>
+				<br/><br/>
+				<p:commandButton value="Conferma numero passeggeri" 
+								action="#{reservationBean.handleConfirmPassengerNumber()}" 
+								update="reservationPage"
+								rendered="#{not utilsBean.disablePassengersNumberInput}"
+								/>
+				<p:commandButton value="Modifica numero passeggeri" 
+								action="#{utilsBean.setDisablePassengersNumberInput(false)}" 
+								update="reservationPage"
+								rendered="#{utilsBean.disablePassengersNumberInput}"
+								immediate="true"
+								/>
+	      		<br/>#{utilsBean.disablePassengersNumberInput} #{reservationBean.passengersNumber}
+	      	</div>
+		</p:outputPanel>
+</ui:composition>

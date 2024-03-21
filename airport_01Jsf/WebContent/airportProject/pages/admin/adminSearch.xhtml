@@ -1,0 +1,82 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+			<p:outputPanel id="idAdminSearch" rendered="#{renderingBean.pageToRender eq renderingBean.searchSubpage}">
+				<div align="center">
+					<br/>
+					<h1>RISULTATI RICERCA</h1>
+					<br/>
+					<p:outputPanel rendered="#{searcherBean.allValorizedListsAreEmpty() or searcherBean.allListsAreNull()}" >
+						<h2>Nessun risultato trovato</h2>
+					</p:outputPanel>
+					<p:outputPanel rendered="#{not searcherBean.allValorizedListsAreEmpty() and not searcherBean.allListsAreNull()}" >
+						<h2>Risultati</h2>
+						<p:outputPanel rendered="#{searcherBean.airplaneDtoList ne null}">
+							<p:fieldset  legend="Aerei" >
+								<p:dataTable id="idAirplaneTableSearch" var="airplane" value="#{searcherBean.airplaneDtoList}"
+											paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+							              	paginator="true" rows="10" style="margin-bottom:20px">
+									<ui:include src="/airportProject/pages/admin/utils/adminFleetUtils/AirplaneTableColumns.xhtml" />
+								</p:dataTable>
+							</p:fieldset>
+							<br/><br/>
+						</p:outputPanel >
+						<p:outputPanel rendered="#{searcherBean.airportDtoList ne null}">
+							<p:fieldset  legend="Aeroporti" >
+								<p:dataTable id="idAirportTableSearch" var="airport" value="#{searcherBean.airportDtoList}"
+											paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+							              	paginator="true" rows="10" style="margin-bottom:20px">
+									<ui:include src="/airportProject/pages/admin/utils/adminAirportsUtils/AirportTableColumns.xhtml" />
+								</p:dataTable>
+							</p:fieldset>
+							<br/><br/>
+						</p:outputPanel >
+						<p:outputPanel rendered="#{searcherBean.customerDtoList ne null}">
+							<p:fieldset  legend="Clienti" >
+								<p:dataTable id="idCustomerTableSearch" var="customer" value="#{searcherBean.customerDtoList}"
+											paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+							              	paginator="true" rows="10" style="margin-bottom:20px">
+									<ui:include src="/airportProject/pages/admin/utils/adminSearchUtils/CustomerTableColumns.xhtml" />
+								</p:dataTable>
+							</p:fieldset>
+						<br/><br/>
+						</p:outputPanel >
+						<p:outputPanel rendered="#{searcherBean.reservationDtoList ne null}">
+							<p:fieldset  legend="Prenotazioni" >
+								<p:dataTable id="idReservationTableSearch" var="reservation" value="#{searcherBean.reservationDtoList}"
+											paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+							              	paginator="true" rows="10" style="margin-bottom:20px">
+									<ui:include src="/airportProject/pages/admin/utils/adminSearchUtils/ReservationTableColumns.xhtml" />
+								</p:dataTable>
+							</p:fieldset>
+							<br/><br/>
+						</p:outputPanel >
+						<p:outputPanel rendered="#{searcherBean.flightDtoList ne null}">
+							<p:fieldset  legend="Voli" >
+								<p:dataTable id="idFlightTableSearch" var="flight" value="#{searcherBean.flightDtoList}"
+											paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+							              	paginator="true" rows="10" style="margin-bottom:20px">
+									<ui:include src="/airportProject/pages/admin/utils/adminSearchUtils/FlightTableColumns.xhtml" />
+								</p:dataTable>
+							</p:fieldset>
+							<br/><br/>
+						</p:outputPanel >
+						<p:outputPanel rendered="#{searcherBean.flightRouteDtoList ne null}">
+							<p:fieldset  legend="Tratte" >
+								<p:dataTable id="idFlightRouteTableSearch" var="flightRoute" value="#{searcherBean.flightRouteDtoList}"
+											paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+							              	paginator="true" rows="10" style="margin-bottom:20px">
+									<ui:include src="/airportProject/pages/admin/utils/adminSearchUtils/FlightRouteTableColumns.xhtml" />
+								</p:dataTable>
+							</p:fieldset>
+							<br/><br/>
+						</p:outputPanel >
+					</p:outputPanel>
+				</div>
+			</p:outputPanel>
+</ui:composition>

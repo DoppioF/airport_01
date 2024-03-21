@@ -1,0 +1,57 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+			<p:outputPanel id="idHomeAdmin" rendered="#{renderingBean.pageToRender eq renderingBean.adminHomePage}">
+				<f:event listener="#{flightRouteBean.initFlightRouteListForAdmin()}" type="preRenderComponent" />				
+				<ui:include src="/airportProject/pages/admin/utils/homeAdminUtils/AdminHomeDialogs.xhtml" />
+				<div align="center">
+					<br/>
+					<h1>AMMINISTRAZIONE</h1>
+					<br/>
+					<p:outputPanel id="idHomeAdminSubPanel" rendered="#{renderingBean.pageToRender eq renderingBean.adminHomePage}">
+						<ui:include src="/airportProject/pages/admin/utils/homeAdminUtils/SelectFlightAdmin.xhtml" />
+						 &nbsp;&nbps;
+						<p:commandButton update="adminDom" action="#{flightRouteBean.getFlightsByAirports()}" value="Cerca voli"
+										disabled="#{airportBean.selectedAirportArrival.id eq null or airportBean.selectedAirportDeparture.id eq null}"/>
+						<br/>
+						<!-- 
+						#{airportBean.selectedAirportDeparture.id eq null} #{airportBean.selectedAirportArrival.id eq null}
+						#{airportBean.selectedAirportDeparture.id} #{airportBean.selectedAirportArrival.id}
+						 -->
+						<br/>
+						<p:commandButton id="idButtonDeleteRoute" rendered="#{flightRouteBean.selectedRouteExists}" action="#{utilsBean.deleteRequest('Route', null)}" value="Cancella tratta" icon="pi pi-times" update="adminDom" style="background: red"/>
+						<p:tooltip id="toolTipDeleteRoute" for="idButtonDeleteRoute" value="Cancella tratta" position="top"/>
+						 &nbsp;&nbps;&nbsp;&nbps;
+						<p:commandButton id="idButtonInsertFlight" rendered="#{flightRouteBean.selectedRouteExists}" action="#{utilsBean.insertFlightRequest()}" value="Inserisci volo" icon="pi pi-plus" update="adminDom" style="background: green"/>
+						<p:tooltip id="toolTipInsertFlight" for="idButtonInsertFlight" value="Inserisci un nuovo volo" position="top"/>
+						<br/><br/><br/>
+						<p:dataTable id="idFlightTableAdmin" rendered="#{flightRouteBean.selectedFlights ne null and flightRouteBean.selectedFlights.size() gt 0}" var="flight" value="#{flightRouteBean.selectedFlights}"
+									paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+		                 			paginator="true" rows="15" style="margin-bottom:20px; ">
+		                 	<p:column headerText="Aereo" >
+						        <h:outputText value="#{flight.model}" />
+						    </p:column>
+							<ui:include src="/airportProject/pages/customer/utils/homeUtils/FlightTableCustomerHeaders.xhtml" />
+							<p:column headerText="N. prenotazioni">
+						        <h:outputText value="#{flight.seats - flight.availableSeats}" />
+						    </p:column>
+							<p:column headerText="">
+						        <p:commandButton action="#{utilsBean.updateFlightRequest(flight.id)}" value="Modifica volo" update="adminDom" icon="pi pi-pencil"/>
+						    </p:column>
+							<p:column headerText="">
+								<p:commandButton action="#{utilsBean.deleteRequest('Flight', flight.id)}" value="Cancella volo" update="adminDom" icon="pi pi-times" style="background: red"/>
+						    </p:column>
+						</p:dataTable>
+						<p:outputPanel id="idHomeAdminNoFlights" rendered="#{flightRouteBean.selectedFlights ne null and flightRouteBean.selectedFlights.size() eq 0}">
+							<br/><br/>
+							<h1>Al momento non ci sono voli per questa tratta</h1>
+						</p:outputPanel>
+					</p:outputPanel>
+				</div>
+			</p:outputPanel>
+</ui:composition>

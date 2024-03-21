@@ -1,0 +1,59 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+		<p:outputPanel id="idUserAreaUnsubscribe" rendered="#{renderingBean.pageToRender eq renderingBean.userAreaReservationsSubpage}">
+	    	<div align="center">
+	        <p:dialog header="Modal Dialog" widgetVar="dialogDeleteReservation" modal="true" height="100">
+		    <h:outputText value="Prenotazione cancellata" />
+		</p:dialog>  
+        <p:dataTable value="#{reservationBean.reservationList}" var="reserv" rows="10" paginator="true"
+                     paginatorPosition="bottom" rowsPerPageTemplate="5,10,15" style="width:600px">
+            <p:column headerText="LE TUE PRENOTAZIONI" >
+                <p:accordionPanel>
+                    <p:tab title="Prenotazione U#{customerBean.customerDto.id}R#{reserv.id}D#{reserv.date.dayOfMonth}">
+                            <div align="center">
+	                            <br/>
+	                            <b><h:outputText value="Data prenotazione" /></b>
+	                            
+	                            <h:outputText value=": #{reserv.date}" />
+	                            <br/><br/>
+	                            <p:outputPanel rendered="#{reserv.validity}">
+		                            <b><h:outputText value="Partenza"/></b>
+		                            <h:outputText value=": 
+		                            	#{reserv.cityDepartureAirport} (#{reserv.nameDepartureAirport}), 
+		                            	il giorno #{utilsBean.formatDateFromLocalDateTime(reserv.departureDate)}
+		                            	alle ore #{utilsBean.formatTimeFromLocalDateTime(reserv.departureDate)}"/>
+		                            <br/>
+		                            <b><h:outputText value="Arrivo"/></b>
+		                            <h:outputText value=": 
+		                            	#{reserv.cityArrivalAirport} (#{reserv.nameArrivalAirport}), 
+		                            	il giorno #{utilsBean.formatDateFromLocalDateTime(reserv.arrivalDate)}
+		                            	alle ore #{utilsBean.formatTimeFromLocalDateTime(reserv.arrivalDate)}"/>
+	                            </p:outputPanel>
+	                            <p:outputPanel rendered="#{not reserv.validity}">
+					            	<b><h:outputText value="ANNULLATA"/></b>
+					            </p:outputPanel>
+	                            <br/><br/>
+	                            <p:commandButton value="Cancella prenotazione" 
+	                            				style="background: red"
+	                            				update="userDom"
+	                            				action="#{reservationBean.handleDeleteReservation(reserv.id)}">
+	                            	<p:confirm header="Conferma cancellazione" message="Sei sicuro di voler cancellare la prenotazione?" icon="pi pi-exclamation-triangle" />
+	                            </p:commandButton>
+	                            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+							        <p:commandButton value="Sì" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
+							        <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-times" />
+							    </p:confirmDialog>   					   
+	                            <br/>
+                            </div>
+                    </p:tab>
+                </p:accordionPanel>
+            </p:column>
+        </p:dataTable>    
+    	</div>
+	</p:outputPanel>
+</ui:composition>

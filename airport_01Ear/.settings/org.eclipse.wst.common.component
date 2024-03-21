@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
+    <wb-module deploy-name="airport_01Ear">
+        <wb-resource deploy-path="/" source-path="/EarContent" tag="defaultRootSource"/>
+        <dependent-module archiveName="airport_01Model.jar" deploy-path="/lib" handle="module:/resource/airport_01Model/airport_01Model">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="airport_01Crud.jar" deploy-path="/lib" handle="module:/resource/airport_01Crud/airport_01Crud">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="airport_01Ejb.jar" deploy-path="/" handle="module:/resource/airport_01Ejb/airport_01Ejb">
+            <dependent-object/>
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="customUtils.jar" deploy-path="/lib" handle="module:/resource/customUtils/customUtils">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="airport_01BusinessLogic.jar" deploy-path="/lib" handle="module:/resource/airport_01BusinessLogic/airport_01BusinessLogic">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="EmailUtil.jar" deploy-path="/lib" handle="module:/resource/EmailUtil/EmailUtil">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="documentUtils.jar" deploy-path="/lib" handle="module:/resource/documentUtils/documentUtils">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="airport_01Jsf.war" deploy-path="/" handle="module:/resource/airport_01Jsf/airport_01Jsf">
+            <dependent-object/>
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="scheduler.jar" deploy-path="/" handle="module:/resource/scheduler/scheduler">
+            <dependent-object/>
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="airport_01Rest.war" deploy-path="/" handle="module:/resource/airport_01Rest/airport_01Rest">
+            <dependent-object/>
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="searcher.jar" deploy-path="/lib" handle="module:/resource/searcher/searcher">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+    </wb-module>
+</project-modules>

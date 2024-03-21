@@ -1,0 +1,21 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+			<p:outputLabel for="@next" value="Seleziona la tratta del volo" />
+			&nbsp;
+			<p:selectOneMenu id="selectRoute" value="#{flightRouteBean.flightRoute.id}" style="width:600px;" >
+				<f:selectItem itemLabel="---" itemValue="" />
+				<c:forEach items="#{flightRouteBean.flightRouteList}" var="route">
+					<f:selectItem itemLabel="#{route.departureAirportCity} (#{route.departureAirportName}) - #{route.arrivalAirportCity} (#{route.arrivalAirportName})" itemValue="#{route.id}" />
+				</c:forEach>
+				<f:facet name="footer">
+					<p:separator />
+					<h:outputText value="#{flightRouteBean.flightRouteList.size()} rotte" style="font-weight:bold;"/>
+				</f:facet>
+			</p:selectOneMenu>
+</ui:composition>

@@ -1,0 +1,127 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+		<p:outputPanel>
+			<p:dialog header="Esito login" widgetVar="dialogLogin" modal="true" >
+			    <div align="center">
+				    <h:outputText value="Login effettuato con successo" />
+					<br/><br/>
+					<p:commandButton value="Ok" action="#{utilsBean.hideModal('dialogLogin')}" update="adminDom"/>
+			    </div>
+			</p:dialog>
+			
+			<p:dialog header="TRATTA INSESISTENTE" widgetVar="dialogInsertRoute" modal="true" >
+			    <div align="center">
+				    <h:outputText value="Al momento non esiste una tratta con la combinazione di aeroporti che hai selezionato. Vuoi crearla?" />
+					<br/><br/>
+					<h:outputLink value="https://www.distance.to/#{flightRouteBean.flightRoute.departureAirportCity},ITA/#{flightRouteBean.flightRoute.arrivalAirportCity},ITA" target="_blank">Cerca distanza fra le città</h:outputLink>
+					<br/>
+				    <p:commandButton value="Sì" action="#{flightRouteBean.handleInsertFlightRoute()}" update="adminDom" style="background: green"/>
+				    &nbsp;
+					<p:commandButton value="No" action="#{utilsBean.hideModal('dialogInsertRoute')}" style="background: grey"/>
+				</div>
+			</p:dialog>
+			
+			<p:dialog header="Inserisci distanza" widgetVar="dialogInsertDistance" modal="true" >
+			    <div align="center">
+			    	<br/>
+			    	<p:inputNumber id="passengersInput" 
+								value="#{flightRouteBean.distanceKm}" 
+								minValue="1" 
+								onkeypress="event.preventDefault(); return event.keyCode !== 13;"
+								>
+					</p:inputNumber>
+					<br/><br/>
+					<p:commandButton value="Indietro" action="#{utilsBean.hideModal('dialogInsertDistance')}" style="background: grey"/>
+				    &nbsp;
+				    <p:commandButton value="Crea tratta con questa distanza" action="#{flightBean.handleInsertFlight()}" update="adminDom" style="background: green"/>
+				</div>
+			</p:dialog>
+			
+			<p:dialog header="Tratta inserita" widgetVar="dialogRouteInserted" modal="true" >
+			    <div align="center">
+				    <h:outputText value="Tratta aggiunta con successo" />
+					<br/><br/>
+					<p:commandButton value="Ok" action="#{utilsBean.hideModal('dialogRouteInserted')}" update="adminDom"/>
+			    </div>
+			</p:dialog>
+			
+			<p:dialog header="CANCELLAZIONE TRATTA" widgetVar="dialogDeleteRoute" modal="true" >
+			    <div align="center">
+				    <h:outputText value="Attenzione, cancellando questa tratta cancellerai anche tutti gli eventuali voli associati. Sei sicuro di voler cancellare questa tratta?" />
+					<br/><br/>
+				    <p:commandButton value="Sì, cancella tratta" action="#{flightRouteBean.handleDeleteFlightRoute()}" update="adminDom" style="background: red"/>
+				    &nbsp;
+					<p:commandButton value="No, torna indietro" action="#{utilsBean.hideModal('dialogDeleteRoute')}" update="adminDom" />
+				</div>
+			</p:dialog>
+			
+			<p:dialog header="Tratta cancellata" widgetVar="dialogRouteDeleted" modal="true" >
+			    <div align="center">
+				    <h:outputText value="Tratta cancellata con successo" />
+					<br/><br/>
+					<p:commandButton value="Ok" action="#{utilsBean.hideModal('dialogRouteDeleted')}" update="adminDom"/>
+			    </div>
+			</p:dialog>
+			
+			<p:dialog header="CREAZIONE VOLO" widgetVar="dialogInsertFlight" modal="true" >
+			    <div align="center">
+			    	<ui:include src="/airportProject/pages/admin/utils/homeAdminUtils/FlightFormInsert.xhtml" />
+					<br/><br/>
+					<p:commandButton value="Indietro" action="#{utilsBean.hideModal('dialogInsertFlight')}" style="background: grey"/>
+				    &nbsp;
+				    <p:commandButton value="Crea nuovo volo" action="#{flightBean.handleInsertFlight()}" update="adminDom" style="background: green"/>
+				</div>
+			</p:dialog>
+			
+			<p:dialog header="Volo inserito" widgetVar="dialogFlightInserted" modal="true" >
+			    <div align="center">
+				    <h:outputText value="Nuovo volo inserito con successo" />
+					<br/><br/>
+					<p:commandButton value="Ok" action="#{utilsBean.hideModal('dialogFlightInserted')}" update="adminDom"/>
+			    </div>
+			</p:dialog>
+			
+			<p:dialog header="MODIFICA VOLO" widgetVar="dialogUpdateFlight" modal="true" >
+			    <div align="center">
+			    	<ui:include src="/airportProject/pages/admin/utils/homeAdminUtils/FlightFormUpdate.xhtml" />
+					<br/><br/>
+					<p:commandButton value="Indietro" action="#{utilsBean.hideModal('dialogUpdateFlight')}" style="background: grey"/>
+				    &nbsp;
+				    <p:commandButton value="Modifica volo" action="#{flightBean.handleUpdateFlight()}" update="adminDom" />
+				</div>
+			</p:dialog>
+			
+			<p:dialog header="Volo aggiornato" widgetVar="dialogFlightUpdated" modal="true" >
+			    <div align="center">
+				    <h:outputText value="Volo modificato con successo" />
+					<br/><br/>
+					<p:commandButton value="Ok" action="#{utilsBean.hideModal('dialogFlightInserted')}" update="adminDom"/>
+			    </div>
+			</p:dialog>
+			
+			<p:dialog header="CANCELLAZIONE VOLO" widgetVar="dialogDeleteFlight" modal="true" >
+			    <div align="center">
+				    <h:outputText value="Attenzione, cancellando questo volo cancellerai anche tutte le eventuali prenotazioni associate. Sei sicuro di voler cancellare questo volo?" />
+					<br/><br/>
+				    <p:commandButton value="Sì, cancella volo" action="#{flightBean.handleDeleteFlight()}" update="adminDom" style="background: red"/>
+				    &nbsp;
+					<p:commandButton value="No, torna indietro" action="#{utilsBean.hideModal('dialogDeleteFlight')}" update="adminDom" />
+				</div>
+			</p:dialog>
+			
+			<p:dialog header="Volo cancellato" widgetVar="dialogFlightDeleted" modal="true" >
+			    <div align="center">
+				    <h:outputText value="Volo cancellato con successo" />
+					<br/><br/>
+					<p:commandButton value="Ok" action="#{utilsBean.hideModal('dialogFlightDeleted')}" update="adminDom"/>
+			    </div>
+			</p:dialog>
+			
+		</p:outputPanel>
+</ui:composition>

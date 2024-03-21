@@ -1,0 +1,42 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+		<p:outputPanel id="idRiepiloguePrice" 
+						rendered="#{utilsBean.disablePassengersNumberInput and renderingBean.pageToRender eq renderingBean.reservationSubpage}" >
+      		<div align="center" style="width:600px">
+				<br/><br/><br/>
+				<h3>Riepilogo prezzo del volo</h3>
+				<p:panelGrid columns="2" layout="grid" styleClass="showcase-text-align-center">
+				    <b>
+					    <h:outputText value="" />
+					    <h:outputText value="Descrizione" /> 
+					    <h:outputText value="Importo" />
+				    </b>
+				     
+				    <h:outputText value="" /> 
+				    <h:outputText value="Prezzo del volo" /> 
+				    <h:outputText value="#{reservationBean.passengersNumber}x #{flightBean.flightDto.price}&euro;" /> 
+				     
+				    <h:outputText value="Servizio di prenotazione" /> 
+				    <h:outputText value="#{reservationBean.passengersNumber}x 3,00&euro;" /> 
+				    
+				    <b>
+				    	<h:outputText value="" /> 
+				    	<p:separator />
+				    	<p:separator />
+					    <h:outputText value="Totale" /> 
+					    <h:outputText value="#{(flightBean.flightDto.price + 3) * reservationBean.passengersNumber}">
+					    	<f:convertNumber pattern="#0.00&euro;" />
+						</h:outputText> 
+				    </b>
+				</p:panelGrid>		 		
+		 		<br/>
+		        <p:commandButton value="Conferma e paga" action="#{reservationBean.handleInsertReservation}" update="userDom" />
+	      	</div>
+		</p:outputPanel>
+</ui:composition>

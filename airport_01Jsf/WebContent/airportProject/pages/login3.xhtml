@@ -1,0 +1,37 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+		<p:outputPanel id="login" rendered="#{renderingBean.pageToRender eq renderingBean.loginSubpage}" >
+      		<div align="center">
+				<p:panel id="panel" header="LOGIN" style="width:600px">
+	 
+		        	<p:messages id="msgsLogin" showDetail="false" showSummary="true" autoUpdate="true" />
+		 
+		        	<h:panelGrid columns="3" cellpadding="5">
+			            <p:outputLabel for="email" value="Inserisci la tua email:" style="font-weight:bold;"/>
+			            <p:inputText id="email" value="#{customerBean.customerDto.email}" required="true" requiredMessage="Campo email obbligatorio!" validatorMessage="Campo email non valido" >
+			                <f:validateRegex pattern="^[\w\-\.]+@([\w-]+\.)+[\w-]{2,}$"/>
+			            </p:inputText>
+			            <p:message id="msgLoginEmail" for="email" display="icon" />
+			 
+			            <p:outputLabel for="password" value="Inserisci la tua password:" style="font-weight:bold;"/>
+			            <p:inputMask id="password" value="#{customerBean.customerDto.password}" required="true" requiredMessage="Campo password obbligatorio!" validatorMessage="Campo password non valido">
+			                <f:validateRegex pattern="^[a-zA-Z0-9\_\-\.\?\!]+$"/>
+			            </p:inputMask>
+			            <p:message id="msgLoginPassword" for="password" display="icon" icon="pi pi arrow-left"/>
+			             <p:ajax event="keyup" update="msgsLogin, msgLoginPassword, msgLoginEmail" />
+		        	</h:panelGrid>
+			 		
+			 		<br/>
+			        <p:commandButton value="Login" update="userDom" action="#{customerBean.handleLogin()}" icon="pi pi-arrow-circle-down" />
+			        &nbsp;
+			        <p:commandButton value="Registrati" update="userDom" action="#{renderingBean.switchPage(renderingBean.registrationSubpage)}" immediate="true" icon="pi pi-pencil" style="background: green"/>
+			    </p:panel>
+	      	</div>
+		</p:outputPanel>
+</ui:composition>

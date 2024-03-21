@@ -1,0 +1,18 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+			<p:outputPanel id="idAdminAirports" rendered="#{renderingBean.pageToRender eq renderingBean.adminAirportsSubpage}">
+				<ui:include src="/airportProject/pages/admin/utils/adminAirportsUtils/AdminAirportsDialogs.xhtml" />
+				<div align="center">
+					<h1>I TUOI AEROPORTI</h1>
+					<br/>
+					<f:event listener="#{airportBean.initAirportList()}" type="preRenderComponent" />
+					<ui:include src="/airportProject/pages/admin/utils/adminAirportsUtils/AirportTable.xhtml" />
+				</div>
+			</p:outputPanel>
+</ui:composition>

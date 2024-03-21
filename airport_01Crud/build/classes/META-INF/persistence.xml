@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.2" xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_2.xsd">
+	<persistence-unit name="airport_01Model" transaction-type="JTA">
+	<provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+		
+		<jta-data-source>java:/airport_01</jta-data-source>
+		<class>airport_01Model.models.entities.Airplane</class>
+		<class>airport_01Model.models.entities.Airport</class>
+		<class>airport_01Model.models.entities.Customer</class>
+		<class>airport_01Model.models.entities.Flight</class>
+		<class>airport_01Model.models.entities.FlightRoute</class>
+		<class>airport_01Model.models.entities.Reservation</class>
+		<class>airport_01Model.models.entities.Role</class>
+		<class>airport_01Model.models.entities.Ticket</class>
+		<properties>
+
+        	<property name="hibernate.show_sql" value="true"/>
+        	<property name="hibernate.enable_lazy_load_no_trans" value="true" />
+
+		</properties>
+	</persistence-unit>
+</persistence>

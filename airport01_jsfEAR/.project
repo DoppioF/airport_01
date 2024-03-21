@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription>
+	<name>airport01_jsfEAR</name>
+	<comment></comment>
+	<projects>
+		<project>customUtils</project>
+		<project>airport_01Crud</project>
+		<project>airport_01Ejb</project>
+		<project>airport_01Jsf</project>
+		<project>airport_01BusinessLogic</project>
+		<project>EmailUtil</project>
+		<project>airport_01Model</project>
+		<project>documentUtils</project>
+	</projects>
+	<buildSpec>
+		<buildCommand>
+			<name>org.eclipse.wst.common.project.facet.core.builder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+		<buildCommand>
+			<name>org.eclipse.wst.validation.validationbuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+	</buildSpec>
+	<natures>
+		<nature>org.eclipse.wst.common.project.facet.core.nature</nature>
+		<nature>org.eclipse.wst.common.modulecore.ModuleCoreNature</nature>
+	</natures>
+</projectDescription>

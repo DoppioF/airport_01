@@ -1,0 +1,32 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+		<p:outputPanel   >
+      		<p:dialog header="MODIFICA AEREO" widgetVar="dialogAirplaneEdit" modal="true" >
+				    <ui:include src="/airportProject/pages/admin/utils/adminFleetUtils/AirplaneForm.xhtml" />
+				</p:dialog>
+				<p:dialog header="ESITO CANCELLAZIONE" widgetVar="dialogAirplaneDelete" modal="true" >
+				    <p:outputLabel value="Aereo cancellato con successo!"/>
+				</p:dialog>
+				<p:dialog header="ESITO MODIFICA" widgetVar="dialogAirplaneUpdate" modal="true" >
+				    <p:outputLabel value="Aereo aggiornato con successo!"/>
+				</p:dialog>
+				<p:dialog header="ESITO INSERIMENTO" widgetVar="dialogAirplaneInsert" modal="true" >
+				    <p:outputLabel value="Aereo inserito con successo!"/>
+				</p:dialog>
+				<p:dialog header="MODIFICA AEREO" widgetVar="dialogAirplaneAddEdit" modal="true" >
+				    <p:outputLabel value="Quale operazione di modifica vuoi eseguire?" />
+				    <br/><br/>
+				    <p:commandButton update="adminDom" value="Annulla" action="#{utilsBean.hideAddEditMotherModelModal('Airplane')}" immediate="true" style="background: grey"/>
+				    &nbsp;&nbsp;
+				    <p:commandButton update="adminDom" value="Modifica esistente" action="#{airplaneBean.handleUpdateAirplane()}" immediate="true" />
+				    &nbsp;&nbsp;
+				    <p:commandButton update="adminDom" value="Crea nuovo" action="#{airplaneBean.handleInsertAirplane()}" immediate="true" style="background: green"/>
+				</p:dialog>
+		</p:outputPanel>
+</ui:composition>

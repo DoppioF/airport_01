@@ -1,0 +1,53 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+		<p:outputPanel id="idDialogAirport"  >
+      		<div align="center">
+      			<p:dialog header="MODIFICA AEREO" widgetVar="dialogAirportAddEdit" modal="true" >
+				    <p:outputLabel value="Quale operazione di modifica vuoi eseguire?" />
+				    <br/>
+				    <p:commandButton value="Torna indietro" immediate="true" style="background: grey"/>
+				    &nbsp;&nbsp;
+				    <p:commandButton value="Modifica esistente" immediate="true" />
+				    &nbsp;&nbsp;
+				    <p:commandButton value="Crea nuovo" immediate="true" style="background: green"/>
+				</p:dialog>
+				<p:panel id="panelAirport" header="" style="width:600px">
+	 
+		        	<p:messages id="msgsAirportsPage" showDetail="false" showSummary="true" autoUpdate="true" />
+		 
+		        	<h:panelGrid columns="3" cellpadding="5">
+			            <p:outputLabel for="airportEditCity" value="Inserisci la città dell'aeroporto:" style="font-weight:bold;"/>
+			            <p:inputText id="airportEditCity" value="#{airportBean.selectedAirportToEdit.airportCity}" required="true" requiredMessage="Campo città obbligatorio!" validatorMessage="Campo città non valido" placeholder="attuale: #{airportBean.selectedAirportToEdit.airportCity}">
+			                <f:validateRegex pattern="^[a-zA-Z0-9\_\-\.\?\!\s]+$"/>
+			            </p:inputText>
+			            <p:message id="msgAirportEditCity" for="airportEditCity" display="icon" />
+			 
+			 			<p:outputLabel for="airportEditName" value="Inserisci il nome dell'aeroporto:" style="font-weight:bold;"/>
+			            <p:inputText id="airportEditName" value="#{airportBean.selectedAirportToEdit.airportName}" required="true" requiredMessage="Campo nome obbligatorio!" validatorMessage="Campo nome non valido" placeholder="attuale: #{airportBean.selectedAirportToEdit.airportName}">
+			                <f:validateRegex pattern="^[a-zA-Z0-9\_\-\.\?\!\s]+$"/>
+			            </p:inputText>
+			            <p:message id="msgAirportEditName" for="airportEditName" display="icon" />
+			            
+			            <p:ajax event="keyup" update="panelAirport" />
+		        	</h:panelGrid>
+			 		
+			 		<br/>
+			        <p:commandButton value="Cancella aeroporto" action="#{airportBean.handleDeleteAirport()}" update="adminDom"  icon="pi pi-times" style="background: red" immediate="true">
+			        	<p:confirm header="Conferma cancellazione" message="Sei sicuro di voler cancellare questo aeroporto?" icon="pi pi-exclamation-triangle" />
+			        </p:commandButton>
+			        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+				        <p:commandButton value="Sì" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
+				        <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-times" />
+				    </p:confirmDialog> 
+			        &nbsp;
+			        <p:commandButton value="Modifica/aggiungi" action="#{utilsBean.showEditMotherModelModal('Airport')}" update="adminDom" icon="pi pi-plus" style="background: green"/>
+			    </p:panel>
+	      	</div>
+		</p:outputPanel>
+</ui:composition>

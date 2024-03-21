@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
+    <wb-module deploy-name="airport_01Ejb">
+        <wb-resource deploy-path="/" source-path="/ejbModule" tag="defaultRootSource"/>
+        <dependent-module archiveName="EmailUtil.jar" deploy-path="/" handle="module:/resource/EmailUtil/EmailUtil">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="documentUtils.jar" deploy-path="/" handle="module:/resource/documentUtils/documentUtils">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="airport_01BusinessLogic.jar" deploy-path="/" handle="module:/resource/airport_01BusinessLogic/airport_01BusinessLogic">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <property name="java-output-path" value="/airport_01Ejb/build/classes"/>
+    </wb-module>
+</project-modules>

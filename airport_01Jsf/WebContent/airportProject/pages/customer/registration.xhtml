@@ -1,0 +1,105 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+		<p:outputPanel id="idRegistrationPage" rendered="#{renderingBean.pageToRender eq renderingBean.registrationSubpage}" >
+      		<div align="center">
+				<p:panel id="panelRegister" header="REGISTRATI" style="width:600px">
+	 				
+	 				<p:dialog header="Modal Dialog" widgetVar="dialogRegistration" modal="true">
+	 					<div align="center">
+						    <h:outputText value="Registrazione avvenuta con successo" />
+		 					<br/><br/>
+		 					<p:commandButton value="Ok" action="#{utilsBean.hideModal('dialogRegistration')}" update="userDom"/>
+						</div>
+					</p:dialog> 		 
+		        	<p:messages id="msgsRegister" showDetail="false" showSummary="true" autoUpdate="true" />
+		 
+		        	<h:panelGrid columns="3" cellpadding="5">
+		        		<p:outputLabel for="nameReg" value="Inserisci il tuo nome:" style="font-weight:bold;"/>
+			            <p:inputText id="nameReg" value="#{customerBean.customerDto.name}" required="true" requiredMessage="Campo nome obbligatorio!" validatorMessage="Campo nome non valido" >
+			                <f:validateRegex pattern="^[A-Za-z\s\-\']+$"/>
+			            </p:inputText>
+			            <p:message id="msgNameReg" for="nameReg" display="icon" />
+			            
+			            <p:outputLabel for="surnameReg" value="Inserisci il tuo cognome:" style="font-weight:bold;"/>
+			            <p:inputText id="surnameReg" value="#{customerBean.customerDto.surname}" required="true" requiredMessage="Campo cognome obbligatorio!" validatorMessage="Campo cognome non valido" >
+			                <f:validateRegex pattern="^[A-Za-z\s\-\']+$"/>
+			            </p:inputText>
+			            <p:message id="msgSurnameReg" for="surnameReg" display="icon" />
+		        	
+			            <p:outputLabel for="emailReg" value="Inserisci la tua email:" style="font-weight:bold;"/>
+			            <p:inputText id="emailReg" value="#{customerBean.customerDto.email}" required="true" requiredMessage="Campo email obbligatorio!" validatorMessage="Campo email non valido" >
+			                <f:validateRegex pattern="^[\w\-\.]+@([\w-]+\.)+[\w-]{2,}$"/>
+			            </p:inputText>
+			            <p:message id="msgEmailReg" for="emailReg" display="icon" />
+			 
+			            <p:outputLabel for="passwordReg" value="Inserisci la tua password:" style="font-weight:bold;"/>
+			            <p:inputText id="passwordReg" value="#{customerBean.customerDto.password}" required="true" requiredMessage="Campo password obbligatorio!" validatorMessage="Campo password non valido">
+			                <f:validateRegex pattern="^[a-zA-Z0-9\_\-\.\?\!]+$"/>
+			            </p:inputText>
+			            <p:message id="msgPasswordReg" for="passwordReg" display="icon" icon="pi pi arrow-left"/>
+			            
+			            <p:outputLabel for="identityCardReg" value="Inserisci la tua carta d'itentità:" style="font-weight:bold;"/>
+			            <p:inputText id="identityCardReg" value="#{customerBean.customerDto.identityCardNumber}" required="true" requiredMessage="Campo carta d'identità obbligatorio!" validatorMessage="Campo carta d'identità non valido" >
+			                <f:validateRegex pattern="^[A-Za-z\s\-\']+$"/>
+			            </p:inputText>
+			            <p:message id="msgIdentityCardReg" for="identityCardReg" display="icon" />
+			            
+			            <p:outputLabel for="phoneNumReg" value="Inserisci il tuo n. telefono:" style="font-weight:bold;"/>
+			            <p:inputText id="phoneNumReg" value="#{customerBean.customerDto.phoneNumber}" validatorMessage="Campo n. telefono non valido" >
+			                <f:validateRegex pattern="^[0-9]*$"/>
+			            </p:inputText>
+			            <p:message id="msgPhoneNumReg" for="phoneNumReg" display="icon" />
+			            
+			            <p:outputLabel for="birthDateReg" value="Inserisci la data di nascita:" style="font-weight:bold;"/>
+			            <p:datePicker id="birthDateReg" value="#{customerBean.customerDto.birthDate}" yearNavigator="true" maxdate="#{utilsBean.maxDateForRegister()}"  showIcon="true" pattern="dd/MM/yy" yearRange="#{utilsBean.yearRangeForRegister()}" required="true" requiredMessage="Campo data nascita obbligatorio!" validatorMessage="L'età deve essere compresa fra 18 e 100" readonlyInput="true" />
+			            <p:message id="msgBirthDateReg" for="birthDateReg" display="icon" />
+			            
+			            <p:outputLabel for="birthCityReg" value="Inserisci la città di nascita:" style="font-weight:bold;"/>
+			            <p:inputText id="birthCityReg" value="#{customerBean.customerDto.birthCity}" required="true" requiredMessage="Campo città di nascita obbligatorio!" validatorMessage="Campo città di nascita non valido" >
+			                <f:validateRegex pattern="^[a-zA-Z0-9\_\-\.\?\!\s]+$"/>
+			            </p:inputText>
+			            <p:message id="msgBirthCityReg" for="birthCityReg" display="icon" />
+			            
+			            <p:outputLabel for="addressReg" value="Inserisci l'indirizzo di residenza:" style="font-weight:bold;"/>
+			            <p:inputText id="addressReg" value="#{customerBean.customerDto.residentialAddress}" required="true" requiredMessage="Campo indirizzo di residenza obbligatorio!" validatorMessage="Campo indirizzo di residenza non valido" >
+			                <f:validateRegex pattern="^[A-Za-z\s\-\']+$"/>
+			            </p:inputText>
+			            <p:message id="msgAddressReg" for="addressReg" display="icon" />
+			            
+			            <p:outputLabel for="residenceCityReg" value="Inserisci la città di residenza:" style="font-weight:bold;"/>
+			            <p:inputText id="residenceCityReg" value="#{customerBean.customerDto.residenceCity}" required="true" requiredMessage="Campo città di residenza obbligatorio!" validatorMessage="Campo città di residenza non valido" >
+			                <f:validateRegex pattern="^[a-zA-Z0-9\_\-\.\?\!\s]+$"/>
+			            </p:inputText>
+			            <p:message id="msgResidenceCityReg" for="residenceCityReg" display="icon" />
+			            
+			            <p:outputLabel for="provinceReg" value="Inserisci la provincia di residenza:" style="font-weight:bold;"/>
+			            <p:inputText id="provinceReg" value="#{customerBean.customerDto.residenceProvince}" validatorMessage="Campo provincia non valido" >
+			                <f:validateRegex pattern="^[A-Za-z\s\-\']*$"/>
+			            </p:inputText>
+			            <p:message id="msgProvinceReg" for="provinceReg" display="icon" />
+			            
+			            <p:outputLabel for="postcodeReg" value="Inserisci il CAP di residenza:" style="font-weight:bold;"/>
+			            <p:inputText id="postcodeReg" value="#{customerBean.customerDto.residencePostcode}" required="true" requiredMessage="Campo CAP obbligatorio!" validatorMessage="Campo CAP non valido" >
+			                <f:validateRegex pattern="^[A-Za-z\s\-\']+$"/>
+			            </p:inputText>
+			            <p:message id="msgPostcodeReg" for="postcodeReg" display="icon" />
+			            
+			            <p:outputLabel for="taxcodeReg" value="Inserisci il tuo codice fiscale:" style="font-weight:bold;"/>
+			            <p:inputText id="taxcodeReg" value="#{customerBean.customerDto.taxCode}" required="true" requiredMessage="Campo codice fiscale obbligatorio!" validatorMessage="Campo codice fiscale non valido" >
+			                <f:validateRegex pattern="^[A-Z0-9]{16}$"/>
+			            </p:inputText>
+			            <p:message id="msgTaxcodeReg" for="taxcodeReg" display="icon" />
+			            
+			            <p:ajax event="keyup" update="msgsLogin, msgLoginPassword, msgLoginEmail" />
+		        	</h:panelGrid>
+			 		
+			 		<br/>
+			        <p:commandButton value="Registrati" update="userDom" action="#{customerBean.handleRegister()}" icon="pi pi-pencil" style="background: green" />
+			    </p:panel>
+	      	</div>
+		</p:outputPanel>
+</ui:composition>

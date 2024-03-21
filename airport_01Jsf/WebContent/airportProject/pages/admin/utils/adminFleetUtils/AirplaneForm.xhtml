@@ -1,0 +1,62 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+		<p:outputPanel id="idDialogAirplane"  >
+      		<div align="center">
+      			<p:dialog header="MODIFICA AEREO" widgetVar="dialogAirplaneAddEdit" modal="true" >
+				    <p:outputLabel value="Quale operazione di modifica vuoi eseguire?" />
+				    <br/>
+				    <p:commandButton value="Torna indietro" immediate="true" style="background: grey"/>
+				    &nbsp;&nbsp;
+				    <p:commandButton value="Modifica esistente" immediate="true" />
+				    &nbsp;&nbsp;
+				    <p:commandButton value="Crea nuovo" immediate="true" style="background: green"/>
+				</p:dialog>
+				<p:panel id="panelAirplane" header="" style="width:600px">
+	 
+		        	<p:messages id="msgsFleetPage" showDetail="false" showSummary="true" autoUpdate="true" />
+		 
+		        	<h:panelGrid columns="3" cellpadding="5">
+			            <p:outputLabel for="airplaneEditModel" value="Inserisci il modello dell'aereo:" style="font-weight:bold;"/>
+			            <p:inputText id="airplaneEditModel" value="#{airplaneBean.selectedAirplane.model}" required="true" requiredMessage="Campo modello obbligatorio!" validatorMessage="Campo modello non valido" placeholder="attuale: #{airplaneBean.selectedAirplane.model}">
+			                <f:validateRegex pattern="^[a-zA-Z0-9\_\-\.\?\!\s]+$"/>
+			            </p:inputText>
+			            <p:message id="msgAirplaneEditModel" for="airplaneEditModel" display="icon" />
+			 
+			 			<p:outputLabel for="airplaneEditSeats" value="Inserisci il n. di sedute dell'aereo:" style="font-weight:bold;"/>
+			            <p:inputNumber id="airplaneEditSeats" minValue="1" maxValue="500" value="#{airplaneBean.selectedAirplane.seats}" required="true" requiredMessage="Campo sedute obbligatorio!" validatorMessage="Campo sedute non valido" placeholder="attuale: #{airplaneBean.selectedAirplane.seats}">
+			            </p:inputNumber>
+			            <p:message id="msgAirplaneEditSeats" for="airplaneEditSeats" display="icon" />
+			            
+			            <p:outputLabel for="airplaneEditHoldCapacity" value="Inserisci la capacità stiva (litri):" style="font-weight:bold;"/>
+			            <p:inputNumber id="airplaneEditHoldCapacity" minValue="1" maxValue="1000000" value="#{airplaneBean.selectedAirplane.holdCapacity}" required="true" requiredMessage="Campo capacità stiva obbligatorio!" validatorMessage="Campo capacità stiva non valido" placeholder="attuale: #{airplaneBean.selectedAirplane.holdCapacity}">
+			            </p:inputNumber>
+			            <p:message id="msgAirplaneEditHoldCapacity" for="airplaneEditHoldCapacity" display="icon" />
+			            
+			            <p:outputLabel for="airplaneEditTankCapacity" value="Inserisci la capacità serbatoio (litri):" style="font-weight:bold;"/>
+			            <p:inputNumber id="airplaneEditTankCapacity" minValue="1" maxValue="1000000" value="#{airplaneBean.selectedAirplane.tankCapacity}" required="true" requiredMessage="Campo capacità serbatoio obbligatorio!" validatorMessage="Campo capacità serbatoio non valido" placeholder="attuale: #{airplaneBean.selectedAirplane.tankCapacity}">
+			            </p:inputNumber>
+			            <p:message id="msgAirplaneEditTankCapacity" for="airplaneEditTankCapacity" display="icon" />
+			            
+			            <p:ajax event="keyup" update="panelAirplane" />
+		        	</h:panelGrid>
+			 		
+			 		<br/>
+			        <p:commandButton value="Cancella aereo" action="#{airplaneBean.handleDeleteAirplane()}" update="adminDom"  icon="pi pi-times" style="background: red" immediate="true">
+			        	<p:confirm header="Conferma cancellazione" message="Sei sicuro di voler cancellare questo aereo?" icon="pi pi-exclamation-triangle" />
+			        </p:commandButton>
+			        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+				        <p:commandButton value="Sì" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
+				        <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-times" />
+				    </p:confirmDialog> 
+			        &nbsp;
+			        <p:commandButton value="Modifica/aggiungi" action="#{utilsBean.showEditMotherModelModal('Airplane')}" update="adminDom" icon="pi pi-plus" style="background: green"/>
+			    </p:panel>
+	      	</div>
+		</p:outputPanel>
+</ui:composition>

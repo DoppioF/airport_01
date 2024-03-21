@@ -1,0 +1,36 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+		<p:outputPanel id="idDialogFlightUpdate" >
+			<f:event listener="#{airplaneBean.initAirplaneList()}" type="preRenderComponent" />
+      		<div align="center">
+				<p:panel id="panelFlightUpdate" header="" style="width:600px">
+	 
+		        	<p:messages id="msgsFlightsUpdatePage" showDetail="false" showSummary="true" autoUpdate="true" />
+		 
+		        	<h:panelGrid cellpadding="5">
+		        		<p:outputLabel for="idAirplaneListUpdate" value="Scegli l'aereo:" style="font-weight:bold;"/>
+		        		<p:selectOneMenu id="idAirplaneListUpdate" value="#{flightBean.flightDto.idAirplane}" style="width:300px" >
+							<f:selectItem itemLabel="---" itemValue="" noSelectionOption="true"/>
+							<f:selectItems value="#{airplaneBean.airplaneList}" itemValue="#{airplane.id}" var="airplane" itemLabel="#{airplane.model} (#{airplane.seats} sedute, serbatoio da #{airplane.tankCapacity} litri)"/>
+						</p:selectOneMenu>
+						
+						<p:outputLabel for="idDepartureDateUpdate" value="Inserisci la data di partenza:" style="font-weight:bold;"/>
+			            <p:datePicker id="idDepartureDateUpdate" value="#{flightBean.flightDto.departureDate}" showTime="true" yearNavigator="true" mindate="#{utilsBean.minDateForEditFlight()}" showIcon="true" pattern="dd/MM/yy HH:mm" requiredMessage="Campo data partenza obbligatorio!" validatorMessage="error" readonlyInput="true" />
+			            <p:message id="msgDepartureDateUpdate" for="idDepartureDateUpdate" display="icon" />
+			            
+			            <p:outputLabel for="idArrivalDateUpdate" value="Inserisci la data di arrivo:" style="font-weight:bold;"/>
+			            <p:datePicker id="idArrivalDateUpdate" value="#{flightBean.flightDto.arrivalDate}" showTime="true" yearNavigator="true" mindate="#{utilsBean.minDateForEditFlight()}" showIcon="true" pattern="dd/MM/yy HH:mm" requiredMessage="Campo data arrivo obbligatorio!" validatorMessage="error" readonlyInput="true" />
+			            <p:message id="msgArrivalDateUpdate" for="idArrivalDateUpdate" display="icon" />
+						
+			            <p:ajax event="keyup" update="panelFlightUpdate" />
+		        	</h:panelGrid>
+			    </p:panel>
+	      	</div>
+		</p:outputPanel>
+</ui:composition>

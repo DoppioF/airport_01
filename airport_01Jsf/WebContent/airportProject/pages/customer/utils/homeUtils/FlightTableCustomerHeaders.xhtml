@@ -1,0 +1,32 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+			
+    <p:column headerText="Città di partenza">
+        <h:outputText value="#{flight.cityDepartureAirport}" />
+    </p:column>
+    <p:column headerText="Data partenza">
+        <h:outputText value="#{flight.departureDate.dayOfMonth lt 10 ? '0' : ''}#{flight.departureDate.dayOfMonth}/#{flight.departureDate.monthValue lt 10 ? '0' : ''}#{flight.departureDate.monthValue}/#{flight.departureDate.year}" />
+    </p:column>
+    <p:column headerText="Ora partenza">
+        <h:outputText value="#{flight.departureDate.toLocalTime()}" />
+    </p:column>
+    <p:column headerText="Città di arrivo">
+        <h:outputText value="#{flight.cityArrivalAirport}" />
+    </p:column>
+    <p:column headerText="Data arrivo">
+        <h:outputText value="#{flight.arrivalDate.dayOfMonth lt 10 ? '0' : ''}#{flight.arrivalDate.dayOfMonth}/#{flight.arrivalDate.monthValue lt 10 ? '0' : ''}#{flight.arrivalDate.monthValue}/#{flight.arrivalDate.year}" />
+    </p:column>
+    <p:column headerText="Ora arrivo">
+        <h:outputText value="#{flight.arrivalDate.toLocalTime()}" />
+    </p:column>
+    <p:column headerText="Prezzo">
+        <h:outputText value="#{flight.price}&euro;" />
+    </p:column>
+
+</ui:composition>

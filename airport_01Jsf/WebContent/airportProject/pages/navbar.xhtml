@@ -1,0 +1,35 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+      
+		<p:menubar id="idMenubar">
+			<p:menuitem id="idHomeMenubar" immediate="true" value="Home" action="#{renderingBean.switchPage(customerBean.customerDto.id eq customerBean.ADMIN_ROLE_ID ? renderingBean.homePage : renderingBean.adminHomePage)}" disabled="#{renderingBean.pageToRender eq renderingBean.homePage or renderingBean.pageToRender eq renderingBean.adminHomePage}" icon="pi pi-home" update="#{customerBean.ADMIN_ROLE_ID eq customerBean.customerDto.idRole ? 'adminDom' : 'userDom'}"/>
+			<p:submenu id="idDropdownUser" label="#{customerBean.customerDto.name}" icon="pi pi-user" rendered="#{customerBean.logged eq true and customerBean.ADMIN_ROLE_ID ne customerBean.customerDto.idRole}">
+	            <p:menuitem id="idDropdownPrenotazioni" value="Le tue prenotazioni" action="#{renderingBean.switchPage(renderingBean.userAreaReservationsSubpage)}" update="userDom" immediate="true"/>
+	            <p:separator />
+	            <p:menuitem id="idDropdownDisisc" value="Disiscriviti" action="#{renderingBean.switchPage(renderingBean.userAreaUnsubscribeSubpage)}" update="userDom" immediate="true"/>
+	        </p:submenu>
+	        <p:submenu id="idDropdownAdmin" label="#{customerBean.customerDto.name}" icon="pi pi-user" rendered="#{customerBean.logged eq true and customerBean.ADMIN_ROLE_ID eq customerBean.customerDto.idRole}">
+	            <p:menuitem id="idDropdownFlotta" value="La tua flotta" action="#{renderingBean.switchPage(renderingBean.adminFleetSubpage)}" update="adminDom" immediate="true"/>
+	            <p:menuitem id="idDropdownAeroporti" value="I tuoi aeroporti" action="#{renderingBean.switchPage(renderingBean.adminAirportsSubpage)}" update="adminDom" immediate="true"/>
+	            <p:separator />
+	        </p:submenu>
+	        <p:menuitem rendered= "#{customerBean.logged eq true and customerBean.ADMIN_ROLE_ID eq customerBean.customerDto.idRole}" >
+				<p:inputText id="idInputText" value="#{searcherBean.input}" style="width: 500px">
+					<p:ajax event="keyup"/>
+				</p:inputText>
+	        </p:menuitem>
+	        <p:menuitem rendered= "#{customerBean.logged eq true and customerBean.ADMIN_ROLE_ID eq customerBean.customerDto.idRole}">
+				<p:commandButton immediate="true" value="Cerca" action="#{searcherBean.handleSearch()}" icon="pi pi-search" update="adminDom"/>
+	        </p:menuitem>
+			<f:facet name="options">
+				<p:commandButton id="idLogoutMenubar" immediate="true" value="Logout" action="#{customerBean.doLogout()}" icon="pi pi-sign-in" rendered="#{customerBean.logged eq true}" />
+				<p:commandButton id="idLoginMenubar" immediate="true" value="Login" action="#{renderingBean.switchPage(renderingBean.loginSubpage)}" icon="pi pi-arrow-circle-down" update="#{customerBean.ADMIN_ROLE_ID eq customerBean.customerDto.idRole ? 'adminDom' : 'userDom'}" rendered="#{customerBean.logged eq false}"/>
+			</f:facet>
+		</p:menubar>
+		
+		
+</ui:composition>
