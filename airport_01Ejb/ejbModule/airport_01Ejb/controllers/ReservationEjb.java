@@ -11,7 +11,7 @@ import javax.ejb.Stateless;
 
 import airport_01Crud.crud.ReservationCrud;
 import airport_01Ejb.interfaces.ReservationEjbInterface;
-import airport_01Ejb.utils.ModelToDtoConverter;
+import airport_01Ejb.utils.converters.ModelToDtoConverter;
 import airport_01Model.dto.CustomerDto;
 import airport_01Model.dto.ReservationDto;
 import airport_01Model.models.entities.Reservation;

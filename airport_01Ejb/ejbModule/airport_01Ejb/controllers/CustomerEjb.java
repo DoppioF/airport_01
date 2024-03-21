@@ -12,10 +12,10 @@ import javax.ejb.Stateless;
 
 import airport_01Crud.crud.CustomerCrud;
 import airport_01Ejb.interfaces.CustomerEjbInterface;
-import airport_01Ejb.utils.DtoToModelConverter;
 import airport_01Ejb.utils.ModelMerger;
-import airport_01Ejb.utils.ModelToDtoConverter;
-import airport_01Ejb.utils.Validator;
+import airport_01Ejb.utils.converters.DtoToModelConverter;
+import airport_01Ejb.utils.converters.ModelToDtoConverter;
+import airport_01Ejb.utils.validators.Validator;
 import airport_01Model.dto.CustomerDto;
 import airport_01Model.models.entities.Customer;
 import customUtils.constants.strings.EjbConstants;

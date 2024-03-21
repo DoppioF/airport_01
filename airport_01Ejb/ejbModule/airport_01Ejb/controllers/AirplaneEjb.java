@@ -13,9 +13,9 @@ import javax.ejb.Stateless;
 
 import airport_01Crud.crud.AirplaneCrud;
 import airport_01Ejb.interfaces.AirplaneEjbInterface;
-import airport_01Ejb.utils.DtoToModelConverter;
-import airport_01Ejb.utils.ModelToDtoConverter;
-import airport_01Ejb.utils.Validator;
+import airport_01Ejb.utils.converters.DtoToModelConverter;
+import airport_01Ejb.utils.converters.ModelToDtoConverter;
+import airport_01Ejb.utils.validators.Validator;
 import airport_01Model.dto.AirplaneDto;
 import airport_01Model.dto.ResponseDto;
 import airport_01Model.models.entities.Airplane;

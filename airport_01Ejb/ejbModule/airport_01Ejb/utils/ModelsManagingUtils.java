@@ -14,6 +14,8 @@ import airport_01Crud.crud.FlightCrud;
 import airport_01Crud.crud.FlightRouteCrud;
 import airport_01Crud.crud.ReservationCrud;
 import airport_01Crud.crud.TicketCrud;
+import airport_01Ejb.utils.converters.DtoToModelConverter;
+import airport_01Ejb.utils.converters.ModelToDtoConverter;
 import airport_01Model.dto.FlightDto;
 import airport_01Model.dto.FlightRouteDto;
 import airport_01Model.dto.RoleDto;

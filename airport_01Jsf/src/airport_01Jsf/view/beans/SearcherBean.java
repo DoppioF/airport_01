@@ -60,7 +60,7 @@ public class SearcherBean implements Serializable {
 	
 	public void handleSearch() {
 		try {
-			cleanAllLists();
+			nullAllLists();
 			System.out.println(input);
 			resultDtoList = searcherEjb.invokeSearcher(input);
 			
@@ -88,23 +88,107 @@ public class SearcherBean implements Serializable {
 			System.out.println(resultDto.getDtoList());
 			if (!resultDto.getDtoList().isEmpty()) {
 				if (AirplaneDto.class.equals(resultDto.getDtoType())) {
-					airplaneDtoList = resultDto.getDtoList();
+					manageResults(resultDto.getDtoList(), (AirplaneDto) resultDto.getDtoList().get(0));
 				} else if (AirportDto.class.equals(resultDto.getDtoType())) {
-					airportDtoList = resultDto.getDtoList();
+					manageResults(resultDto.getDtoList(), (AirportDto) resultDto.getDtoList().get(0));
 				} else if (CustomerDto.class.equals(resultDto.getDtoType())) {
-					customerDtoList = resultDto.getDtoList();
+					manageResults(resultDto.getDtoList(), (CustomerDto) resultDto.getDtoList().get(0));
 				} else if (FlightDto.class.equals(resultDto.getDtoType())) {
-					flightDtoList = resultDto.getDtoList();
+					manageResults(resultDto.getDtoList(), (FlightDto) resultDto.getDtoList().get(0));
 				} else if (FlightRouteDto.class.equals(resultDto.getDtoType())) {
-					flightRouteDtoList = resultDto.getDtoList();
+					manageResults(resultDto.getDtoList(), (FlightRouteDto) resultDto.getDtoList().get(0));
 				} else if (ReservationDto.class.equals(resultDto.getDtoType())) {
-					reservationDtoList = resultDto.getDtoList();
+					manageResults(resultDto.getDtoList(), (ReservationDto) resultDto.getDtoList().get(0));
 				}
 			}
 		}
 	}
 	
-	private void cleanAllLists() {
+	private void manageResults(List<FlightRouteDto> newList, FlightRouteDto firstElement) {
+		if (null == flightRouteDtoList) {
+			flightRouteDtoList = newList;
+		} else {
+			addResultsToExistingList(newList, firstElement);
+		}
+	}
+	
+	private void addResultsToExistingList(List<FlightRouteDto> newList, FlightRouteDto firstElement) {
+		for (FlightRouteDto route : newList) {
+			flightRouteDtoList.add(route);
+		}
+	}
+	
+	private void manageResults(List<FlightDto> newList, FlightDto firstElement) {
+		if (null == flightDtoList) {
+			flightDtoList = newList;
+		} else {
+			addResultsToExistingList(newList, firstElement);
+		}
+	}
+	
+	private void addResultsToExistingList(List<FlightDto> newList, FlightDto firstElement) {
+		for (FlightDto flight : newList) {
+			flightDtoList.add(flight);
+		}
+	}
+	
+	private void manageResults(List<CustomerDto> newList, CustomerDto firstElement) {
+		if (null == customerDtoList) {
+			customerDtoList = newList;
+		} else {
+			addResultsToExistingList(newList, firstElement);
+		}
+	}
+	
+	private void addResultsToExistingList(List<CustomerDto> newList, CustomerDto firstElement) {
+		for (CustomerDto customer : newList) {
+			customerDtoList.add(customer);
+		}
+	}
+	
+	private void manageResults(List<ReservationDto> newList, ReservationDto firstElement) {
+		if (null == reservationDtoList) {
+			reservationDtoList = newList;
+		} else {
+			addResultsToExistingList(newList, firstElement);
+		}
+	}
+	
+	private void addResultsToExistingList(List<ReservationDto> newList, ReservationDto firstElement) {
+		for (ReservationDto reservation : newList) {
+			reservationDtoList.add(reservation);
+		}
+	}
+	
+	private void manageResults(List<AirplaneDto> newList, AirplaneDto firstElement) {
+		if (null == airplaneDtoList) {
+			airplaneDtoList = newList;
+		} else {
+			addResultsToExistingList(newList, firstElement);
+		}
+	}
+	
+	private void addResultsToExistingList(List<AirplaneDto> newList, AirplaneDto firstElement) {
+		for (AirplaneDto airplane : newList) {
+			airplaneDtoList.add(airplane);
+		}
+	}
+	
+	private void manageResults(List<AirportDto> newList, AirportDto firstElement) {
+		if (null == airportDtoList) {
+			airportDtoList = newList;
+		} else {
+			addResultsToExistingList(newList, firstElement);
+		}
+	}
+	
+	private void addResultsToExistingList(List<AirportDto> newList, AirportDto firstElement) {
+		for (AirportDto airport : newList) {
+			airportDtoList.add(airport);
+		}
+	}
+	
+	private void nullAllLists() {
 		airplaneDtoList = null;
 		airportDtoList = null;
 		customerDtoList = null;

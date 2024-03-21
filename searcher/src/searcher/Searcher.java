@@ -29,7 +29,6 @@ public class Searcher {
 		setTableNamesArray(keywords.values().toArray(new String[0]));
 		searcherController.initCleanedInput(input);
 		searcherController.initRecognizedWords(keywordsArray);
-		
 	}
 
 	@SuppressWarnings("serial")
@@ -46,18 +45,17 @@ public class Searcher {
 		return this;
 	}
 
-	public Map<String, String> getSecondaryKeywords() {
-		return secondaryKeywords;
-	}
-
-	public void setSecondaryKeywords(Map<String, String> secondaryKeywords) {
-		this.secondaryKeywords = secondaryKeywords;
-	}
-	
 	public List<QueryFromSearcher> buildQuery() throws SearcherException {
 		return searcherController.buildQuery(finalFlow, keywords, secondaryKeywords, tableList);
 	}
 	
+	public Map<String, String> getSecondaryKeywords() {
+		return secondaryKeywords;
+	}
+	
+	public void setSecondaryKeywords(Map<String, String> secondaryKeywords) {
+		this.secondaryKeywords = secondaryKeywords;
+	}
 
 	public SearcherController getSearcherController() {
 		return searcherController;

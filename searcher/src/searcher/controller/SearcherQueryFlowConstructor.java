@@ -160,7 +160,17 @@ public class SearcherQueryFlowConstructor {
 							, secondaryKeywords
 							, tableList);
 		cleanQuery(builder);
-		return new String[] { builder.toString()};
+		return manageExceptionFkAndGetQuery(builder.toString());
+	}
+	
+	private String[] manageExceptionFkAndGetQuery(String currentQuery) {
+		if (currentQuery.contains("flight_route.id_departure_airport")) {
+			return new String[] {
+				currentQuery.replace("_airport", "_airport OR airport.id = flight_route.id_arrival_airport")
+			};
+		} else {
+			return new String[] { currentQuery };
+		}
 	}
 	
 	private void appendJoinIfNecessary(StringBuilder builder
@@ -445,21 +455,13 @@ public class SearcherQueryFlowConstructor {
 														, prefixPrimary
 														, prefixSecondary
 														, 1 + indexNextSecondaryKeyword);
-		builder.append(" " 
-					+ calculateQuerySignAndPutValue((Class<?>) deduceTableNameAndColumnType(tableList
-																				, fromKeywordToColumnName(finalFlow.get(indexNextSecondaryKeyword)
-																											, prefixSecondary
-																											, secondaryKeywords))[INDEX_OF_COLUMN_TYPE]
-																				, finalFlow.get(indexNextNonKeyword)) 
+		builder.append(calculateQuerySignAndPutValue((Class<?>) deduceTableNameAndColumnType(tableList
+																							, fromKeywordToColumnName(finalFlow.get(indexNextSecondaryKeyword)
+																														, prefixSecondary
+																														, secondaryKeywords))[INDEX_OF_COLUMN_TYPE]
+																							, finalFlow.get(indexNextNonKeyword)) 
 					+ AND);
 		return indexNextNonKeyword + 1;
-	}
-	
-	private boolean isADate(final String string) {
-		
-		
-		
-		return false;
 	}
 	
 //	private String getTableName(String keyword) {

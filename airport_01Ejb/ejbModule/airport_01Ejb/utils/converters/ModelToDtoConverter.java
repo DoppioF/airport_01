@@ -1,4 +1,4 @@
-package airport_01Ejb.utils;
+package airport_01Ejb.utils.converters;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

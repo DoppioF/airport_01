@@ -1,4 +1,4 @@
-package airport_01Ejb.utils;
+package airport_01Ejb.utils.validators;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

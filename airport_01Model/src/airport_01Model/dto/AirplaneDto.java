@@ -14,7 +14,7 @@ public class AirplaneDto implements Serializable {
 	private List<FlightDto> flightList;
 	
 	
-	
+	 
 	
 	public Long getId() {
 		return id;

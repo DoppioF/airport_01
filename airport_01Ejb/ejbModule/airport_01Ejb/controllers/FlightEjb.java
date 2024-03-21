@@ -13,7 +13,7 @@ import javax.ejb.Stateless;
 import airport_01.businessLogic.SeatsManager;
 import airport_01Crud.crud.FlightCrud;
 import airport_01Ejb.interfaces.FlightEjbInterface;
-import airport_01Ejb.utils.ModelToDtoConverter;
+import airport_01Ejb.utils.converters.ModelToDtoConverter;
 import airport_01Model.dto.FlightDto;
 import airport_01Model.dto.RoleDto;
 import airport_01Model.models.entities.Flight;

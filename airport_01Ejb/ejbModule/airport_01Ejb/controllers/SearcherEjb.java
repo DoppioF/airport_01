@@ -10,13 +10,15 @@ import java.util.Map.Entry;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 import airport_01.businessLogic.AirportProjectUtil;
 import airport_01.businessLogic.SeatsManager;
 import airport_01Crud.crud.SearcherCrud;
 import airport_01Ejb.interfaces.SearcherEjbInterface;
-import airport_01Ejb.utils.ModelToDtoConverter;
 import airport_01Ejb.utils.ModelsManagingUtils;
+import airport_01Ejb.utils.converters.ModelToDtoConverter;
 import airport_01Model.dto.AirplaneDto;
 import airport_01Model.dto.AirportDto;
 import airport_01Model.dto.CustomerDto;
@@ -48,6 +50,9 @@ import utils.constants.SearcherConstants;
 @Stateless(name = EjbConstants.SEARCHER_EJB)
 @LocalBean
 public class SearcherEjb implements SearcherEjbInterface{
+	
+//	@PersistenceContext
+//	EntityManager entityManager;
 
 	@Override
 	public List<QueryResultDto> invokeSearcher(final String input)
@@ -96,9 +101,11 @@ public class SearcherEjb implements SearcherEjbInterface{
 			System.out.println("Query che sto lanciando: " + queryFromSearcher.getQuery());
 			if (!stringValueOnColumnNumber(queryFromSearcher.getQuery())) {
 				try {
-					resultEntitiesList.add(searcherCrud.executeQuery(getEntityManager()
-																	, queryFromSearcher.getQuery()
-																	, queryFromSearcher.getEntityType()));
+					List<?> result = searcherCrud.executeQuery(getEntityManager()
+//							entityManager
+																, queryFromSearcher.getQuery()
+																, queryFromSearcher.getEntityType());
+					resultEntitiesList.add(result);
 				} catch (DBQueryException e) {
 					rollbackEntityTransaction();
 					beginEntityTransaction();
@@ -194,7 +201,6 @@ public class SearcherEjb implements SearcherEjbInterface{
 		String[] splittedQuery = query.split(" ");
 		for (int index = 0; index < splittedQuery.length;) {
 			if ((splittedQuery[index].equals("WHERE")
-				|| splittedQuery[index].equals("AND")
 				|| splittedQuery[index].equals("OR"))
 				&& isNumericClass(getClassOfCurrentColumn(splittedQuery[index + 1]))) {
 				
@@ -220,11 +226,11 @@ public class SearcherEjb implements SearcherEjbInterface{
 	}
 	
 	private boolean isNumericClass(Class<?> classType) {
-		return classType.equals(Integer.class)
-				|| classType.equals(Float.class)
-				|| classType.equals(Byte.class)
-				|| classType.equals(Long.class)
-				|| classType.equals(Double.class);
+		return Integer.class.equals(classType)
+				|| Float.class.equals(classType)
+				|| Byte.class.equals(classType)
+				|| Long.class.equals(classType)
+				|| Double.class.equals(classType);
 	}
 //	@SuppressWarnings("serial")
 //	private List<Class<?>> getAllEntityClass() {

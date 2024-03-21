@@ -1,4 +1,4 @@
-package airport_01Ejb.utils;
+package airport_01Ejb.utils.converters;
 
 import java.util.List;
 
