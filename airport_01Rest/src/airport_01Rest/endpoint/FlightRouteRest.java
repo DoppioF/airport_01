@@ -30,7 +30,7 @@ public class FlightRouteRest implements IFlightRouteRest {
 		ResponseDto responseDto = new ResponseDto();
 		Status responseStatus = Status.INTERNAL_SERVER_ERROR;
 			try {
-				new RestUtils().generateOkDto(responseDto, new EJBFactory<FlightRouteEjbInterface>(FlightRouteEjbInterface.class).getEJB().findAllFlightRoute());
+				new RestUtils().generateOkDto(responseDto, new EJBFactory<FlightRouteEjbInterface>(FlightRouteEjbInterface.class).getEJB().findAllFlightRoute(null));
 				responseStatus = Status.OK;
 			} catch (ValidatorException e) {
 				responseDto.setMessage(e.getMessage());
