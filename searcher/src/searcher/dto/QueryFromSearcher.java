@@ -5,7 +5,7 @@ public class QueryFromSearcher {
 	private String query;
 	private Class<?> entityType;
 	private Class<?> dtoType;
-	
+	private Boolean executeOnlyOneQuery;
 	
 	public String getQuery() {
 		return query;
@@ -25,6 +25,17 @@ public class QueryFromSearcher {
 	public void setDtoType(Class<?> dtoType) {
 		this.dtoType = dtoType;
 	}
-	
-	
+	public Boolean getExecuteOnlyOneQuery() {
+		return executeOnlyOneQuery;
+	}
+	public void setExecuteOnlyOneQuery(Boolean executeOnlyOneQuery) {
+		this.executeOnlyOneQuery = executeOnlyOneQuery;
+	}
+	@Override
+	public String toString() {
+		return "QueryFromSearcher [query=" + query + 
+				", entityType=" + (null == entityType ? "null" : entityType.getCanonicalName()) + 
+				", dtoType=" + (null == dtoType ? "null" : dtoType.getCanonicalName()) +
+				", executeOnlyOneQuery=" + executeOnlyOneQuery + "]";
+	}
 }

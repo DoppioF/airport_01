@@ -108,7 +108,7 @@ public class SearcherEjb implements SearcherEjbInterface{
 																, queryFromSearcher.getQuery()
 																, queryFromSearcher.getEntityType());
 					System.out.println("risultati" + result);
-					if (!result.isEmpty()) {
+					if (!queryFromSearcher.getExecuteOnlyOneQuery() || !result.isEmpty()) {
 						resultEntitiesList.add(result);
 						break;
 					}
@@ -123,12 +123,12 @@ public class SearcherEjb implements SearcherEjbInterface{
 	private void convertResults(List<List<?>> resultEntitiesList, List<QueryResultDto> resultDtoList) throws SearcherException {
 		ModelToDtoConverter converter = new ModelToDtoConverter();
 		for (int index = 0; index < resultEntitiesList.size(); index++) {
-			convertToRightDtoList(resultEntitiesList.get(index), resultDtoList.get(index), converter);
+			convertToDtoList(resultEntitiesList.get(index), resultDtoList.get(index), converter);
 		}
 	}
 	
 	
-	private void convertToRightDtoList(List<?> resultEntityList, QueryResultDto resultDto, ModelToDtoConverter converter) throws SearcherException {
+	private void convertToDtoList(List<?> resultEntityList, QueryResultDto resultDto, ModelToDtoConverter converter) throws SearcherException {
 		if (AirplaneDto.class.equals(resultDto.getDtoType())) {
 			fillDtoListWithAirplaneDto(resultEntityList, resultDto, converter);
 		} else if (AirportDto.class.equals(resultDto.getDtoType())) {

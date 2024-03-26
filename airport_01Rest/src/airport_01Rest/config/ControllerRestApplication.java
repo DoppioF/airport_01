@@ -13,6 +13,7 @@ import airport_01Rest.endpoint.CustomerRest;
 import airport_01Rest.endpoint.FlightRest;
 import airport_01Rest.endpoint.FlightRouteRest;
 import airport_01Rest.endpoint.ReservationRest;
+import airport_01Rest.endpoint.SearcherRest;
 import airport_01Rest.endpoint.TicketRest;
 
 
@@ -29,6 +30,7 @@ public class ControllerRestApplication extends Application {
 		set.add(CustomerRest.class);
 		set.add(ReservationRest.class);
 		set.add(TicketRest.class);
+		set.add(SearcherRest.class);
 		return set;
 	}
 

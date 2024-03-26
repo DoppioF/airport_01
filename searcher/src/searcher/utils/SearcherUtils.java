@@ -10,6 +10,7 @@ import customUtils.exceptions.DBQueryException;
 import customUtils.exceptions.SearcherException;
 import searcher.QueryBuilderEx;
 import searcher.dto.DbTableStructure;
+import searcher.dto.QueriesInfo;
 import searcher.dto.QueryFromSearcher;
 
 @SuppressWarnings("serial")
@@ -42,15 +43,15 @@ public class SearcherUtils {
 		return queryFromSearcherListFactory(getQueries());
 	}
 	
-	private List<QueryFromSearcher> queryFromSearcherListFactory(String[] queries) throws SearcherException {
+	private List<QueryFromSearcher> queryFromSearcherListFactory(QueriesInfo queriesInfo) throws SearcherException {
 		List<QueryFromSearcher> queryList = new ArrayList<>();
-		for (String query : queries) {
-			queryList.add(queryFromSearcherFactory(tableList, query));
+		for (String query : queriesInfo.getQueries()) {
+			queryList.add(queryFromSearcherFactory(tableList, query, queriesInfo.getExecuteOnlyOneQuery()));
 		}
 		return queryList;
 	}
 	
-	private String[] getQueries() throws SearcherException {
+	private QueriesInfo getQueries() throws SearcherException {
 		return queryBuilder.buildQueries(finalFlow
 				, foundKeywords
 				, keywords
@@ -183,7 +184,7 @@ public class SearcherUtils {
 		return null;
 	}
 	
-	private QueryFromSearcher queryFromSearcherFactory(List<DbTableStructure> tableList, String query) throws SearcherException {
+	private QueryFromSearcher queryFromSearcherFactory(List<DbTableStructure> tableList, String query, boolean executeOnlyOneQuery) throws SearcherException {
 		String tableNameOfCurrentQuery = query.split(" ")[3];
 		for (DbTableStructure tableStructure : tableList) {
 			if (tableNameOfCurrentQuery.equals(tableStructure.getTableName())) {
@@ -191,6 +192,7 @@ public class SearcherUtils {
 				queryFromSearcher.setQuery(query);
 				queryFromSearcher.setEntityType(tableStructure.getEntityClass());
 				queryFromSearcher.setDtoType(tableStructure.getDtoClass());
+				queryFromSearcher.setExecuteOnlyOneQuery(executeOnlyOneQuery);
 				return queryFromSearcher;
 			}
 		}

@@ -23,7 +23,7 @@ public class RestConstants {
 		public final static String FIND_RESERVATION_BY_ID_CUSTOMER 	= "/getCustomerReservationList";
 		public final static String FIND_FLIGHT_ROUTE_BY_AIRPORTS 	= "/findRoutesByAirports";
 		public final static String FIND_CUSTOMER_BY_ID				= "/findCustomerById";
-		
+		public final static String SEARCH							= "/search";
 	}
 
 }

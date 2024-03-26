@@ -27,6 +27,9 @@ public class QueryResultDto<T> implements Serializable {
 	public void setDtoList(List<T> dtoList) {
 		this.dtoList = dtoList;
 	}
-	
-	
+
+	@Override
+	public String toString() {
+		return "QueryResultDto [dtoType=" + (null == dtoType ? "null" : dtoType.getCanonicalName()) + ", dtoList=" + dtoList + "]";
+	}
 }

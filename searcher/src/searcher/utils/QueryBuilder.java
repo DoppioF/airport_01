@@ -14,6 +14,7 @@ import customUtils.constants.strings.SearcherErrors;
 import customUtils.exceptions.DBQueryException;
 import customUtils.exceptions.SearcherException;
 import searcher.dto.DbTableStructure;
+import searcher.dto.QueriesInfo;
 
 public class QueryBuilder {
 	
@@ -80,7 +81,7 @@ public class QueryBuilder {
 		return word.startsWith(prefix);
 	}
 	
-	public String[] buildQueries(List<String> finalFlow
+	public QueriesInfo buildQueries(List<String> finalFlow
 								, List<String> foundKeywords
 								, Map<String, String> keywords
 								, final String prefixSecondary
@@ -95,12 +96,18 @@ public class QueryBuilder {
 																			, prefixSecondary
 																			, finalFlow.indexOf(prefixPrimary + foundKeywords.get(0)));
 			if (-1 == indexOfNextSecondaryKeyword && 1 < finalFlow.size()) {
-				
-				return calculateQueriesOnePKeywordNoSKeywords(finalFlow, foundKeywords, keywords, prefixSecondary, prefixPrimary, secondaryKeywords, tableList);
+				return queriesInfoFactory(calculateQueriesOnePKeywordNoSKeywords(finalFlow
+																				, foundKeywords
+																				, keywords
+																				, prefixSecondary
+																				, prefixPrimary
+																				, secondaryKeywords
+																				, tableList)
+											, true);
 			} else if (-1 == indexOfNextSecondaryKeyword) {
-				return new String[] {builder.toString()} ;
+				return queriesInfoFactory(new String[] {builder.toString()}) ;
 			} else {
-				return completeQuery(builder
+				return queriesInfoFactory(completeQuery(builder
 									, indexOfNextSecondaryKeyword
 									, finalFlow
 									, foundKeywords
@@ -108,10 +115,10 @@ public class QueryBuilder {
 									, prefixSecondary
 									, prefixPrimary
 									, secondaryKeywords
-									, tableList);
+									, tableList));
 			}
 		} else {
-			return chooseRightQuery(finalFlow, tableList, prefixSecondary, secondaryKeywords);
+			return queriesInfoFactory(chooseRightQuery(finalFlow, tableList, prefixSecondary, secondaryKeywords));
 		}
 	}
 	
@@ -650,6 +657,18 @@ public class QueryBuilder {
 				|| Byte.class.equals(classType)
 				|| Long.class.equals(classType)
 				|| Double.class.equals(classType);
+	}
+	
+	private QueriesInfo queriesInfoFactory(String[] queries) {
+		QueriesInfo queriesInfo = new QueriesInfo();
+		queriesInfo.setQueries(queries);
+		return queriesInfo;
+	}
+	
+	private QueriesInfo queriesInfoFactory(String[] queries, boolean executeOnlyOneQuery) {
+		QueriesInfo queriesInfo = queriesInfoFactory(queries);
+		queriesInfo.setExecuteOnlyOneQuery(executeOnlyOneQuery);
+		return queriesInfo;
 	}
 
 	public int getIndexOfFirstPrimaryKeyword() {
