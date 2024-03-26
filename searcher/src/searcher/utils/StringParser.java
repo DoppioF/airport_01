@@ -1,6 +1,6 @@
 package searcher.utils;
 
-public class CustomStringLogicTool {
+public class StringParser {
 	private String[] alphabet = new String[] {
 		"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"
 	};
@@ -78,6 +78,10 @@ public class CustomStringLogicTool {
 				+ string.substring(position + 1, string.length()));
 //		System.out.println(newString);
 		return newString;
+	}
+	
+	public String[] logicSplit(String input) {
+		return input.toLowerCase().split("[^a-z0-9'/@/./-]");
 	}
 	
 	public String[] getAlphabet() {

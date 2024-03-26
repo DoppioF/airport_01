@@ -10,25 +10,24 @@ import customUtils.exceptions.DBQueryException;
 import customUtils.exceptions.SearcherException;
 import searcher.dto.DbTableStructure;
 import searcher.dto.QueryFromSearcher;
-import searcher.utils.CustomStringLogicTool;
+import searcher.utils.StringParser;
 
 @SuppressWarnings("serial")
-public class SearcherController {
+public class QueryBuilderController {
 	private final int IGNORABLE_WORDS_LENGTH = 2;
 	private final int MAX_AMOUNT_OF_KEYWORDS_ACCEPTED = 3;
 	private final String PRIMARY_KEYWORD_PREFIX = "kw1-";
 	private final String SECONDARY_KEYWORD_PREFIX = "kw2-";
-	private final CustomStringLogicTool stringTool = new CustomStringLogicTool();
-	private final SearcherQueryFlowConstructor interpreter = new SearcherQueryFlowConstructor();
+	private final StringParser stringParser = new StringParser();
+	private final QueryBuilderLogic interpreter = new QueryBuilderLogic();
 	private List<String> foundKeywords = new ArrayList<>();
-	
 	private List<String> cleanedInput;
 	private String[] recognizedWords;
 	
 	public void initCleanedInput(String input) {
 		setCleanedInput(new ArrayList<>() {
 			{
-				for (String string : logicSplit(input)) {
+				for (String string : stringParser.logicSplit(input)) {
 					if (string.length() > IGNORABLE_WORDS_LENGTH
 						|| CustomStringUtils.isStringParsableToNumber(string)) {
 						add(string);
@@ -69,7 +68,6 @@ public class SearcherController {
 					}
 				}
 			}
-			
 		}
 	}
 	
@@ -119,13 +117,9 @@ public class SearcherController {
 		cleanedInput.set(index, null);
 	}
 	
-	private String[] logicSplit(String input) {
-		return input.toLowerCase().split("[^a-z0-9'/@/./-]");
-	}
-	
 	private String tryRecognizeWord(final String word, String[] keywords) {
 		for (String keyword : keywords) {
-			if (stringTool.isCompatible(word, keyword)) {
+			if (stringParser.isCompatible(word, keyword)) {
 				return keyword;
 			}
 		}
@@ -185,7 +179,7 @@ public class SearcherController {
 		return SECONDARY_KEYWORD_PREFIX;
 	}
 
-	public SearcherQueryFlowConstructor getInterpreter() {
+	public QueryBuilderLogic getInterpreter() {
 		return interpreter;
 	}
 

@@ -7,13 +7,13 @@ import java.util.Map;
 
 import customUtils.exceptions.DBQueryException;
 import customUtils.exceptions.SearcherException;
-import searcher.controller.SearcherController;
+import searcher.controller.QueryBuilderController;
 import searcher.dto.DbTableStructure;
 import searcher.dto.QueryFromSearcher;
 
-public class Searcher {
+public class QueryBuilder {
 
-	private SearcherController searcherController;
+	private QueryBuilderController queryBuilderController;
 	private Map<String, String> keywords;
 	private Map<String, String> secondaryKeywords;
 	private String[] keywordsArray;
@@ -21,23 +21,27 @@ public class Searcher {
 	private List<String> finalFlow;
 	private List<DbTableStructure> tableList;
 	
-	public Searcher(final String input, Map<String, String> keywords, List<DbTableStructure> tableList) throws SearcherException {
-		searcherController = new SearcherController();
+	public QueryBuilder(final String input, Map<String, String> keywords, List<DbTableStructure> tableList) throws SearcherException {
+		init(input, keywords, tableList);
+	}
+	
+	private void init(final String input, Map<String, String> keywords, List<DbTableStructure> tableList) throws SearcherException {
+		this.queryBuilderController = new QueryBuilderController();
 		this.tableList = tableList;
 		this.keywords = keywords;
-		keywordsArray = keywords.keySet().toArray(new String[0]);
-		setTableNamesArray(keywords.values().toArray(new String[0]));
-		searcherController.initCleanedInput(input);
-		searcherController.initRecognizedWords(keywordsArray);
+		this.keywordsArray = keywords.keySet().toArray(new String[0]);
+		this.tableNamesArray = keywords.values().toArray(new String[0]);
+		queryBuilderController.initCleanedInput(input);
+		queryBuilderController.initRecognizedWords(keywordsArray);
 	}
 
 	@SuppressWarnings("serial")
-	public Searcher withTheseSecondaryKeywords(Map<String, String> secondaryKeywords) {
+	public QueryBuilder withTheseSecondaryKeywords(Map<String, String> secondaryKeywords) {
 		this.secondaryKeywords = secondaryKeywords;
-		searcherController.completeRecognizedWords(secondaryKeywords.keySet().toArray(new String[0]));
+		queryBuilderController.completeRecognizedWords(secondaryKeywords.keySet().toArray(new String[0]));
 		setFinalFlow(new ArrayList<>() {
 			{
-				for (String string : searcherController.getRecognizedWords()) {
+				for (String string : queryBuilderController.getRecognizedWords()) {
 					add(string);
 				}
 			}
@@ -46,7 +50,7 @@ public class Searcher {
 	}
 
 	public List<QueryFromSearcher> buildQuery() throws SearcherException {
-		return searcherController.buildQuery(finalFlow, keywords, secondaryKeywords, tableList);
+		return queryBuilderController.buildQuery(finalFlow, keywords, secondaryKeywords, tableList);
 	}
 	
 	public Map<String, String> getSecondaryKeywords() {
@@ -57,8 +61,8 @@ public class Searcher {
 		this.secondaryKeywords = secondaryKeywords;
 	}
 
-	public SearcherController getSearcherController() {
-		return searcherController;
+	public QueryBuilderController getSearcherController() {
+		return queryBuilderController;
 	}
 
 	public List<String> getFinalFlow() {

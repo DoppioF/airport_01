@@ -40,7 +40,7 @@ import customUtils.exceptions.DBQueryException;
 import customUtils.exceptions.SearcherException;
 import customUtils.exceptions.UnforeseenException;
 import customUtils.exceptions.ValidatorException;
-import searcher.Searcher;
+import searcher.QueryBuilder;
 import searcher.dto.DbTableStructure;
 import searcher.dto.QueryFromSearcher;
 import searcher.dto.QueryResultDto;
@@ -63,7 +63,7 @@ public class SearcherEjb implements SearcherEjbInterface{
 				throw new ValidatorException(GeneralConstants.MISSING_DATA);
 			}
 			
-			List<QueryFromSearcher> queries = new Searcher(input
+			List<QueryFromSearcher> queries = new QueryBuilder(input
 															, SearcherConstants.PRIMARY_KEYWORDS
 															, SearcherConstants.TABLE_STRUCTURE_LIST)
 													.withTheseSecondaryKeywords(SearcherConstants.SECONDARY_KEYWORDS)
@@ -73,7 +73,7 @@ public class SearcherEjb implements SearcherEjbInterface{
 			SearcherCrud searcherCrud = new SearcherCrud();
 			beginEntityTransaction();
 			
-			executeQueriesAndGetResults(queries, resultEntitiesList, resultDtoList, searcherCrud);
+			executeQueriesAndSetResults(queries, resultEntitiesList, resultDtoList, searcherCrud);
 			convertResults(resultEntitiesList, resultDtoList);
 			
 			return resultDtoList;
@@ -91,21 +91,26 @@ public class SearcherEjb implements SearcherEjbInterface{
 		}
 	}
 	
-	private void executeQueriesAndGetResults(List<QueryFromSearcher> queries
+	private void executeQueriesAndSetResults(List<QueryFromSearcher> queries
 											, List<List<?>> resultEntitiesList
 											, List<QueryResultDto> resultDtoList
 											, SearcherCrud searcherCrud) throws Exception {
 		
 		for (QueryFromSearcher queryFromSearcher : queries) {
 			resultDtoList.add(new QueryResultDto(queryFromSearcher.getDtoType()));
-			System.out.println("Query che sto lanciando: " + queryFromSearcher.getQuery());
+			System.out.println("Query che dovrei lanciare: " + queryFromSearcher.getQuery());
 			if (!stringValueOnColumnNumber(queryFromSearcher.getQuery())) {
+				System.out.println("Query effettivamente lanciata: " + queryFromSearcher.getQuery());
 				try {
 					List<?> result = searcherCrud.executeQuery(getEntityManager()
 //							entityManager
 																, queryFromSearcher.getQuery()
 																, queryFromSearcher.getEntityType());
-					resultEntitiesList.add(result);
+					System.out.println("risultati" + result);
+					if (!result.isEmpty()) {
+						resultEntitiesList.add(result);
+						break;
+					}
 				} catch (DBQueryException e) {
 					rollbackEntityTransaction();
 					beginEntityTransaction();
@@ -202,7 +207,7 @@ public class SearcherEjb implements SearcherEjbInterface{
 		for (int index = 0; index < splittedQuery.length;) {
 			if ((splittedQuery[index].equals("WHERE")
 				|| splittedQuery[index].equals("OR"))
-				&& isNumericClass(getClassOfCurrentColumn(splittedQuery[index + 1]))) {
+				&& isNumericClass(getClassOfCurrentColumn(cleanedColumnName(splittedQuery[index + 1])))) {
 				
 				if (!CustomStringUtils.isStringParsableToNumber(splittedQuery[index + 3])) {
 					return true;
@@ -214,6 +219,16 @@ public class SearcherEjb implements SearcherEjbInterface{
 			}
 		}
 		return false;
+	}
+	
+//	private String deleteCondition(String[] splittedQuery, String query, final int startingIndex) {
+//		for (int index = startingIndex; index <)
+//	}
+	
+	private String cleanedColumnName(String rawColumnName) {
+		return rawColumnName.contains(".")
+				? rawColumnName.split("\\.")[1]
+				: rawColumnName;
 	}
 	
 	private Class<?> getClassOfCurrentColumn(String columnName) {

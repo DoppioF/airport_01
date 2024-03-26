@@ -2,9 +2,12 @@ package searcher.controller;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import javax.mail.search.SearchException;
 
 import customUtils.classes.CustomStringUtils;
 import customUtils.constants.strings.SearcherErrors;
@@ -12,7 +15,7 @@ import customUtils.exceptions.DBQueryException;
 import customUtils.exceptions.SearcherException;
 import searcher.dto.DbTableStructure;
 
-public class SearcherQueryFlowConstructor {
+public class QueryBuilderLogic {
 	
 	private int indexOfFirstPrimaryKeyword = -1;
 	private final String WHERE = " WHERE ";
@@ -25,8 +28,11 @@ public class SearcherQueryFlowConstructor {
 	private final String ON = " ON ";
 	private final String LIKE = " LIKE ";
 	private final String GENERIC_QUERY_START = SELECT + ALL + FROM;
+	private final String QUERY_SEPARATOR = " ### ";
 	private final int INDEX_OF_TABLE_NAME = 0;
 	private final int INDEX_OF_COLUMN_TYPE = 1;
+	private final int QUERY_INDEX_OF_FROM = 2;
+	private List<String> tablesAlreadyJoined = new ArrayList<>();
 	
 	public void initIndexOfFirstPrimaryKeyword(List<String> finalFlow, String prefix) throws SearcherException {
 		int index = 0;
@@ -89,26 +95,169 @@ public class SearcherQueryFlowConstructor {
 																			, prefixSecondary
 																			, finalFlow.indexOf(prefixPrimary + foundKeywords.get(0)));
 			if (-1 == indexOfNextSecondaryKeyword && 1 < finalFlow.size()) {
-				return queryEntireTable(keywords.get(foundKeywords.get(0)), tableList, cleanWordOfFinalFlow(finalFlow.get(1), prefixPrimary, prefixSecondary));
+				
+				return calculateQueriesOnePKeywordNoSKeywords(finalFlow, foundKeywords, keywords, prefixSecondary, prefixPrimary, secondaryKeywords, tableList);
 			} else if (-1 == indexOfNextSecondaryKeyword) {
 				return new String[] {builder.toString()} ;
 			} else {
-				return completeQueryAndReturnEntireString(builder
-															, indexOfNextSecondaryKeyword
-															, finalFlow
-															, foundKeywords
-															, keywords
-															, prefixSecondary
-															, prefixPrimary
-															, secondaryKeywords
-															, tableList);
+				return completeQuery(builder
+									, indexOfNextSecondaryKeyword
+									, finalFlow
+									, foundKeywords
+									, keywords
+									, prefixSecondary
+									, prefixPrimary
+									, secondaryKeywords
+									, tableList);
 			}
 		} else {
 			return chooseRightQuery(finalFlow, tableList, prefixSecondary, secondaryKeywords);
 		}
 	}
 	
-	private String cleanWordOfFinalFlow(String word, String prefixPrimary, String prefixSecondary) {
+	private String[] calculateQueriesOnePKeywordNoSKeywords(List<String> finalFlow
+															, List<String> foundKeywords
+															, Map<String, String> keywords
+															, final String prefixSecondary
+															, final String prefixPrimary
+															, Map<String, String> secondaryKeywords
+															, List<DbTableStructure> tableList) throws SearcherException {
+		String cleanedValue = cleanWordOfFinalFlow(finalFlow.get(1), prefixPrimary, prefixSecondary);
+		String tableName = keywords.get(foundKeywords.get(0));
+		StringBuilder builder = queryEntireTable(new StringBuilder()
+												, tableName
+												, tableList
+												, cleanedValue);
+		String simpleQuery = builder.toString();
+		builder.append(QUERY_SEPARATOR);
+		String[] splittedQuery = simpleQuery.split(" ");
+		String oneJoinQuery = appendNewOnAndNewWherePartsToExistingQuery(builder, tableList, cleanedValue, splittedQuery, QUERY_INDEX_OF_FROM + 1);
+		builder.append(QUERY_SEPARATOR);
+		splittedQuery = oneJoinQuery.split(QUERY_SEPARATOR);
+		splittedQuery = splittedQuery[splittedQuery.length - 1].split(" ");
+		
+		//due join
+		for (int index = 0; index < splittedQuery.length; index++) {
+			if (splittedQuery[index].equals("JOIN")) {
+				appendNewOnAndNewWherePartsToExistingQuery(builder, tableList, cleanedValue, splittedQuery, index + 1);
+			}
+		}
+		return builder.toString().split(QUERY_SEPARATOR);
+	}
+	
+	private String appendNewOnAndNewWherePartsToExistingQuery(StringBuilder builder
+															, List<DbTableStructure> tableList
+															, final String value
+															, String[] splittedQuery
+															, int startingIndex) throws SearcherException {
+		
+		
+		List<DbTableStructure> listOfFathersOfATable = getListOfTFathersOfATable(splittedQuery[startingIndex], tableList);
+		DbTableStructure currentTable = tableList.stream().filter(table -> table.getTableName().equals(splittedQuery[startingIndex])).findFirst().orElse(null);
+		String joinsToAppend = joinsToAppend(listOfFathersOfATable, currentTable);
+		
+		if (!"".equals(joinsToAppend)) {
+			String whereConditionsToAppend = whereConditionsToAppend(listOfFathersOfATable, value);
+			appendNewQuery(builder, splittedQuery, joinsToAppend, whereConditionsToAppend, startingIndex);
+		}
+		return builder.toString();
+	}
+	
+	//fa parte delle istruzioni in caso di pk e no sk
+	private void appendNewQuery(StringBuilder builder, String[] splittedQuery, final String joinsToAppend, final String whereToAppend, int startingIndex) throws SearcherException {
+		for (int index = 0; index < findIndexOfWhere(splittedQuery); index++) {
+			builder.append(splittedQuery[index] + " ");
+		}
+		deleteFromBuilderEnd(builder, " ");
+		builder.append(joinsToAppend + WHERE + whereToAppend);
+	}
+	
+	private int findIndexOfWhere(String[] splittedQuery) throws SearcherException {
+		for (int index = 0; index < splittedQuery.length; index++) {
+			if (splittedQuery[index].equals("WHERE")) {
+				return index;
+			}
+		}
+		throw new SearcherException("WHERE CONDITION NOT FOUND, METHOD findIndexOfWhere");
+	}
+	
+	private String whereConditionsToAppend(List<DbTableStructure> listOfFathersOfATable, final String value) {
+		StringBuilder builder = new StringBuilder();
+		for (DbTableStructure table : listOfFathersOfATable) {
+			appendNextWhereConditions(table, value, builder);
+		}
+		cleanQuery(builder);
+		return builder.toString();
+	}
+	
+	private void appendNextWhereConditions(DbTableStructure table, final String value, StringBuilder builder) {
+		for (Entry<String, Class<?>> column : table.getColumns().entrySet()) {
+			if (!stringValueOnColumnNumber(column.getValue(), value)) {
+				builder.append(table.getTableName()
+								+ "."
+								+ column.getKey()
+								+ calculateQuerySignAndPutValue(column.getValue(), value)
+								+ OR);
+			}
+		}
+	}
+	
+	private boolean stringValueOnColumnNumber(Class<?> columnClass, final String value) {
+		return isNumericClass(columnClass) 
+				&& !CustomStringUtils.isStringParsableToNumber(value); 
+	}
+	
+	private String joinsToAppend(List<DbTableStructure> listOfFathersOfATable, DbTableStructure joiningTable) {
+		StringBuilder builder = new StringBuilder();
+		for (DbTableStructure table : listOfFathersOfATable) {
+			if (null != joiningTable.getForeignKeys()) {
+				
+				for (String foreignKey : joiningTable.getForeignKeys()) {
+					if (!tablesAlreadyJoined.contains(table.getTableName())
+						&& foreignKey.equals(table.getTableName())) {
+						builder.append(JOIN + table.getTableName() + ON);
+						for (String foreignKeyPrefix : joiningTable.getFkPrefixes()) {
+							builder.append(joiningTable.getTableName()
+											+ "."
+											+ foreignKeyPrefix
+											+ foreignKey
+											+ " = "
+											+ table.getTableName()
+											+ "."
+											+ table.getPkPrefix()
+											+ table.getPkName()
+											+ OR);
+						}
+						cleanQuery(builder);
+						tablesAlreadyJoined.add(table.getTableName());
+					}
+				}
+			}
+		}
+		return builder.toString();
+	}
+	
+	private List<DbTableStructure> getListOfTFathersOfATable(final String tableName, List<DbTableStructure> tableList) throws SearcherException {
+		List<DbTableStructure> fatherList = new ArrayList<>();
+		List<String> foreignKeys = getTableStructureByTableName(tableName, tableList).getForeignKeys();
+		if (null != foreignKeys) {
+			for (String foreignKey : foreignKeys) {
+				fatherList.add(getTableStructureByTableName(foreignKey, tableList));
+			}
+		}
+		return fatherList;
+	}
+	
+	private DbTableStructure getTableStructureByTableName(final String tableName, List<DbTableStructure> tableList) throws SearcherException {
+		for (DbTableStructure table : tableList) {
+			if (tableName.equals(table.getTableName())) {
+				return table;
+			}
+		}
+		throw new SearcherException("TABLE " + tableName + " NOT FOUND");
+	}
+	
+	private String cleanWordOfFinalFlow(String word, final String prefixPrimary, final String prefixSecondary) {
 		if (isAPrimaryKeyword(word, prefixPrimary)) {
 			return word.substring(prefixPrimary.length());
 		} else if (isASecondaryKeyword(word, prefixSecondary)) {
@@ -118,33 +267,41 @@ public class SearcherQueryFlowConstructor {
 		}
 	}
 	
-	private String[] queryEntireTable(final String tableName, List<DbTableStructure> tableList, final String value) {
-		String[] tableColumnsName = tableList.stream()
-										.filter(table -> table.getTableName().equals(tableName))
-										.flatMap(table -> table.getColumns().entrySet().stream().map(Entry::getKey))
-										.toArray(String[]::new);
-		String[] queries = new String[tableColumnsName.length];
-		for (int index = 0; index < queries.length; index++) {
-			queries[index] = GENERIC_QUERY_START 
-							+ tableName 
-							+ WHERE 
-							+ tableColumnsName[index] 
-							+ calculateQuerySignAndPutValue((Class<?>) deduceTableNameAndColumnType(tableList
-																									, tableColumnsName[index])[INDEX_OF_COLUMN_TYPE]
-															, value);
+	private StringBuilder queryEntireTable(StringBuilder builder, final String tableName, List<DbTableStructure> tableList, final String value) {
+		String[] tableColumnsName = getColumnsNameOfATable(tableName, tableList);
+//		String[] queries = new String[tableColumnsName.length];
+		
+		builder.append(GENERIC_QUERY_START + tableName + WHERE);
+		for (int index = 0; index < tableColumnsName.length; index++) {
+			Class<?> currentColumnType = (Class<?>) deduceTableNameAndColumnType(tableList, tableColumnsName[index])[INDEX_OF_COLUMN_TYPE];
+			if (!stringValueOnColumnNumber(currentColumnType, value)) {
+				builder.append(tableName
+								+ "."
+								+ tableColumnsName[index] 
+								+ calculateQuerySignAndPutValue(currentColumnType, value)
+								+ OR);
+			}
 		}
-		return queries;
+		cleanQuery(builder);
+		return builder;
 	}
 	
-	private String[] completeQueryAndReturnEntireString(StringBuilder builder
-														, int indexOfNextSecondaryKeyword
-														, List<String> finalFlow
-														, List<String> foundKeywords
-														, Map<String, String> keywords
-														, final String prefixSecondary
-														, final String prefixPrimary
-														, Map<String, String> secondaryKeywords
-														, List<DbTableStructure> tableList) throws SearcherException {
+	private String[] getColumnsNameOfATable(final String tableName, List<DbTableStructure> tableList) {
+		return tableList.stream()
+				.filter(table -> table.getTableName().equals(tableName))
+				.flatMap(table -> table.getColumns().entrySet().stream().map(Entry::getKey))
+				.toArray(String[]::new);
+	}
+	
+	private String[] completeQuery(StringBuilder builder
+									, int indexOfNextSecondaryKeyword
+									, List<String> finalFlow
+									, List<String> foundKeywords
+									, Map<String, String> keywords
+									, final String prefixSecondary
+									, final String prefixPrimary
+									, Map<String, String> secondaryKeywords
+									, List<DbTableStructure> tableList) throws SearcherException {
 		
 		appendJoinIfNecessary(builder
 								, foundKeywords
@@ -403,15 +560,17 @@ public class SearcherQueryFlowConstructor {
 		String queryToClean = builder.toString();
 		String whatToClean = "";
 		if (queryToClean.endsWith((whatToClean = WHERE))) {
-			deleteFromBuilder(builder, whatToClean);
+			deleteFromBuilderEnd(builder, whatToClean);
 		} else if (queryToClean.endsWith((whatToClean = AND))) {
-			deleteFromBuilder(builder, whatToClean);
+			deleteFromBuilderEnd(builder, whatToClean);
 		} else if (queryToClean.endsWith((whatToClean = JOIN))) {
-			deleteFromBuilder(builder, whatToClean);
+			deleteFromBuilderEnd(builder, whatToClean);
+		} else if (queryToClean.endsWith((whatToClean = OR))) {
+			deleteFromBuilderEnd(builder, whatToClean);
 		}
 	}
 	
-	private void deleteFromBuilder(StringBuilder builder, String whatToClean) {
+	private void deleteFromBuilderEnd(StringBuilder builder, String whatToClean) {
 		builder.delete(builder.length() - whatToClean.length(), builder.length());
 	}
 	
@@ -426,28 +585,28 @@ public class SearcherQueryFlowConstructor {
 		for (int indexFinalFlow = 1 + indexOfFirstPrimaryKeyword; indexFinalFlow < finalFlow.size();) {
 			int indexNextSecondaryKeyword = indexOfNextSecondaryKeyword(finalFlow, prefixSecondary, indexFinalFlow);
 			if (indexNextSecondaryKeyword != -1) {
-				indexFinalFlow = appendPartOfWhereConditionAndReturnNextIndex(builder
-																				, indexFinalFlow
-																				, indexNextSecondaryKeyword
-																				, finalFlow
-																				, secondaryKeywords
-																				, prefixPrimary
-																				, prefixSecondary
-																				, tableList);
+				indexFinalFlow = appendPartOfWhereCondition(builder
+															, indexFinalFlow
+															, indexNextSecondaryKeyword
+															, finalFlow
+															, secondaryKeywords
+															, prefixPrimary
+															, prefixSecondary
+															, tableList);
 			} else {
 				break;
 			}
 		}
 	}
 	
-	private int appendPartOfWhereConditionAndReturnNextIndex(StringBuilder builder
-															, int indexFinalFlow
-															, int indexNextSecondaryKeyword
-															, final List<String> finalFlow
-															, final Map<String, String> secondaryKeywords
-															, final String prefixPrimary
-															, final String prefixSecondary
-															, List<DbTableStructure> tableList) throws SearcherException {
+	private int appendPartOfWhereCondition(StringBuilder builder
+											, int indexFinalFlow
+											, int indexNextSecondaryKeyword
+											, final List<String> finalFlow
+											, final Map<String, String> secondaryKeywords
+											, final String prefixPrimary
+											, final String prefixSecondary
+											, List<DbTableStructure> tableList) throws SearcherException {
 		
 		builder.append(secondaryKeywords.get(finalFlow.get(indexNextSecondaryKeyword)
 						.substring(prefixSecondary.length())));
@@ -467,6 +626,15 @@ public class SearcherQueryFlowConstructor {
 //	private String getTableName(String keyword) {
 //		return keywords.get(keyword);
 //	}
+	
+	//TODO: questo metodo devo spostarlo nelle custom utils
+	private boolean isNumericClass(Class<?> classType) {
+		return Integer.class.equals(classType)
+				|| Float.class.equals(classType)
+				|| Byte.class.equals(classType)
+				|| Long.class.equals(classType)
+				|| Double.class.equals(classType);
+	}
 
 	public int getIndexOfFirstPrimaryKeyword() {
 		return indexOfFirstPrimaryKeyword;
