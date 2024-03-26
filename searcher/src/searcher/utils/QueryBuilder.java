@@ -1,4 +1,4 @@
-package searcher.controller;
+package searcher.utils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -15,7 +15,7 @@ import customUtils.exceptions.DBQueryException;
 import customUtils.exceptions.SearcherException;
 import searcher.dto.DbTableStructure;
 
-public class QueryBuilderLogic {
+public class QueryBuilder {
 	
 	private int indexOfFirstPrimaryKeyword = -1;
 	private final String WHERE = " WHERE ";
@@ -80,7 +80,7 @@ public class QueryBuilderLogic {
 		return word.startsWith(prefix);
 	}
 	
-	public String[] buildQuery(List<String> finalFlow
+	public String[] buildQueries(List<String> finalFlow
 								, List<String> foundKeywords
 								, Map<String, String> keywords
 								, final String prefixSecondary
@@ -124,25 +124,43 @@ public class QueryBuilderLogic {
 															, List<DbTableStructure> tableList) throws SearcherException {
 		String cleanedValue = cleanWordOfFinalFlow(finalFlow.get(1), prefixPrimary, prefixSecondary);
 		String tableName = keywords.get(foundKeywords.get(0));
+		
+		//appendo la query base sulla tabella
 		StringBuilder builder = queryEntireTable(new StringBuilder()
 												, tableName
 												, tableList
 												, cleanedValue);
-		String simpleQuery = builder.toString();
-		builder.append(QUERY_SEPARATOR);
-		String[] splittedQuery = simpleQuery.split(" ");
-		String oneJoinQuery = appendNewOnAndNewWherePartsToExistingQuery(builder, tableList, cleanedValue, splittedQuery, QUERY_INDEX_OF_FROM + 1);
-		builder.append(QUERY_SEPARATOR);
-		splittedQuery = oneJoinQuery.split(QUERY_SEPARATOR);
-		splittedQuery = splittedQuery[splittedQuery.length - 1].split(" ");
+		appendSeparator(builder);
 		
-		//due join
+		//appendo la query joinando con le tabelle madri rispetto a quella tabella
+		String oneJoinQuery = appendNewOnAndNewWherePartsToExistingQuery(builder
+																		, tableList
+																		, cleanedValue
+																		, builder.toString().split(" ")
+																		, QUERY_INDEX_OF_FROM + 1);
+		appendSeparator(builder);
+		
+		//appendo la query continuando a joinare tabelle finché non arrivo all'ultima madre
+		String[] splittedQuery = oneJoinQuery.split(QUERY_SEPARATOR);
+		splittedQuery = splittedQuery[splittedQuery.length - 1].split(" ");
+		appendQueryWithMultipleJoins(builder, splittedQuery, tableList, cleanedValue);
+		
+		
+		return builder.toString().split(QUERY_SEPARATOR);
+	}
+	
+	private void appendQueryWithMultipleJoins(StringBuilder builder, String[] splittedQuery, List<DbTableStructure> tableList, final String value) throws SearcherException {
 		for (int index = 0; index < splittedQuery.length; index++) {
 			if (splittedQuery[index].equals("JOIN")) {
-				appendNewOnAndNewWherePartsToExistingQuery(builder, tableList, cleanedValue, splittedQuery, index + 1);
+				appendNewOnAndNewWherePartsToExistingQuery(builder, tableList, value, splittedQuery, index + 1);
+				appendSeparator(builder);
 			}
 		}
-		return builder.toString().split(QUERY_SEPARATOR);
+		cleanQuery(builder);
+	}
+	
+	private void appendSeparator(StringBuilder builder) {
+		builder.append(QUERY_SEPARATOR);
 	}
 	
 	private String appendNewOnAndNewWherePartsToExistingQuery(StringBuilder builder
@@ -207,11 +225,11 @@ public class QueryBuilderLogic {
 				&& !CustomStringUtils.isStringParsableToNumber(value); 
 	}
 	
+	//TODO: smembrare questo metodo
 	private String joinsToAppend(List<DbTableStructure> listOfFathersOfATable, DbTableStructure joiningTable) {
 		StringBuilder builder = new StringBuilder();
 		for (DbTableStructure table : listOfFathersOfATable) {
 			if (null != joiningTable.getForeignKeys()) {
-				
 				for (String foreignKey : joiningTable.getForeignKeys()) {
 					if (!tablesAlreadyJoined.contains(table.getTableName())
 						&& foreignKey.equals(table.getTableName())) {
@@ -392,10 +410,6 @@ public class QueryBuilderLogic {
 		}
 	}
 	
-	private void buildTwoOnConditionsOrThrowException(DbTableStructure tableStructureOfPrimaryKeyword, DbTableStructure tableStructureOfSecondaryKeyword, final String tableNameOfThePrimaryKeyword, final String tableNameOfTheSecondaryKeyword) {
-		
-	}
-	
 	private String checkIfJustOneJoinIsNecessary(DbTableStructure tableStructureOfPrimaryKeyword
 												, DbTableStructure tableStructureOfSecondaryKeyword
 												, final String tableNameOfThePrimaryKeyword
@@ -566,6 +580,8 @@ public class QueryBuilderLogic {
 		} else if (queryToClean.endsWith((whatToClean = JOIN))) {
 			deleteFromBuilderEnd(builder, whatToClean);
 		} else if (queryToClean.endsWith((whatToClean = OR))) {
+			deleteFromBuilderEnd(builder, whatToClean);
+		} else if (queryToClean.endsWith((whatToClean = QUERY_SEPARATOR))) {
 			deleteFromBuilderEnd(builder, whatToClean);
 		}
 	}

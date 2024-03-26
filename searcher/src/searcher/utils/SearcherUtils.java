@@ -1,4 +1,4 @@
-package searcher.controller;
+package searcher.utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,24 +8,81 @@ import customUtils.classes.CustomStringUtils;
 import customUtils.constants.strings.SearcherErrors;
 import customUtils.exceptions.DBQueryException;
 import customUtils.exceptions.SearcherException;
+import searcher.QueryBuilderEx;
 import searcher.dto.DbTableStructure;
 import searcher.dto.QueryFromSearcher;
-import searcher.utils.StringParser;
 
 @SuppressWarnings("serial")
-public class QueryBuilderController {
+public class SearcherUtils {
 	private final int IGNORABLE_WORDS_LENGTH = 2;
 	private final int MAX_AMOUNT_OF_KEYWORDS_ACCEPTED = 3;
 	private final String PRIMARY_KEYWORD_PREFIX = "kw1-";
 	private final String SECONDARY_KEYWORD_PREFIX = "kw2-";
-	private final StringParser stringParser = new StringParser();
-	private final QueryBuilderLogic interpreter = new QueryBuilderLogic();
+	private final SearcherStringParser stringParser = new SearcherStringParser();
+	private final QueryBuilder queryBuilder = new QueryBuilder();
 	private List<String> foundKeywords = new ArrayList<>();
 	private List<String> cleanedInput;
 	private String[] recognizedWords;
 	
+	private Map<String, String> keywords;
+	private Map<String, String> secondaryKeywords;
+	private String[] keywordsArray;
+//	private String[] tableNamesArray;
+	private List<String> finalFlow;
+	private List<DbTableStructure> tableList;
+	
+	public List<QueryFromSearcher> getQueriesBasedOnTheseKeywords(final String input, Map<String, String> keywords, List<DbTableStructure> tableList) throws SearcherException {
+		initBaseParameters(input, keywords, tableList);
+		return queryFromSearcherListFactory(getQueries());
+	}
+	
+	public List<QueryFromSearcher> getQueriesBasedOnTheseKeywords(final String input, Map<String, String> keywords, List<DbTableStructure> tableList, Map<String, String> secondaryKeywords) throws SearcherException {
+		initBaseParameters(input, keywords, tableList);
+		useTheseSecondaryKeywords(secondaryKeywords);
+		return queryFromSearcherListFactory(getQueries());
+	}
+	
+	private List<QueryFromSearcher> queryFromSearcherListFactory(String[] queries) throws SearcherException {
+		List<QueryFromSearcher> queryList = new ArrayList<>();
+		for (String query : queries) {
+			queryList.add(queryFromSearcherFactory(tableList, query));
+		}
+		return queryList;
+	}
+	
+	private String[] getQueries() throws SearcherException {
+		return queryBuilder.buildQueries(finalFlow
+				, foundKeywords
+				, keywords
+				, SECONDARY_KEYWORD_PREFIX
+				, PRIMARY_KEYWORD_PREFIX
+				, secondaryKeywords
+				, tableList);
+	}
+	
+	private void initBaseParameters(final String input, Map<String, String> keywords, List<DbTableStructure> tableList) throws SearcherException {
+		this.tableList = tableList;
+		this.keywords = keywords;
+		this.keywordsArray = keywords.keySet().toArray(new String[0]);
+//		this.tableNamesArray = keywords.values().toArray(new String[0]);
+		initCleanedInput(input);
+		initRecognizedWords(keywordsArray);
+	}
+	
+	private void useTheseSecondaryKeywords(Map<String, String> secondaryKeywords) {
+		this.secondaryKeywords = secondaryKeywords;
+		completeRecognizedWords(secondaryKeywords.keySet().toArray(new String[0]));
+		finalFlow = new ArrayList<>() {
+			{
+				for (String string : recognizedWords) {
+					add(string);
+				}
+			}
+		};
+	}
+	
 	public void initCleanedInput(String input) {
-		setCleanedInput(new ArrayList<>() {
+		cleanedInput = new ArrayList<>() {
 			{
 				for (String string : stringParser.logicSplit(input)) {
 					if (string.length() > IGNORABLE_WORDS_LENGTH
@@ -34,7 +91,7 @@ public class QueryBuilderController {
 					}
 				}
 			}
-		});
+		};
 	}
 	
 	public void initRecognizedWords(String[] keywords) throws SearcherException {
@@ -126,25 +183,6 @@ public class QueryBuilderController {
 		return null;
 	}
 	
-	public List<QueryFromSearcher> buildQuery(List<String> finalFlow
-												, Map<String, String> keywords
-												, Map<String, String> secondaryKeywords
-												, List<DbTableStructure> tableList) throws SearcherException {
-		
-		List<QueryFromSearcher> queryList = new ArrayList<>();
-		String[] queries = interpreter.buildQuery(finalFlow
-													, foundKeywords
-													, keywords
-													, SECONDARY_KEYWORD_PREFIX
-													, PRIMARY_KEYWORD_PREFIX
-													, secondaryKeywords
-													, tableList);
-		for (String query : queries) {
-			queryList.add(queryFromSearcherFactory(tableList, query));
-		}
-		return queryList;
-	}
-	
 	private QueryFromSearcher queryFromSearcherFactory(List<DbTableStructure> tableList, String query) throws SearcherException {
 		String tableNameOfCurrentQuery = query.split(" ")[3];
 		for (DbTableStructure tableStructure : tableList) {
@@ -159,40 +197,79 @@ public class QueryBuilderController {
 		throw new SearcherException(SearcherErrors.UNEXPECTED_ERROR);
 	}
 
-	public List<String> getCleanedInput() {
-		return cleanedInput;
-	}
-
-	public void setCleanedInput(List<String> cleanedInput) {
-		this.cleanedInput = cleanedInput;
-	}
-
-	public String[] getRecognizedWords() {
-		return recognizedWords;
-	}
-
-	public String getPRIMARY_KEYWORD_PREFIX() {
-		return PRIMARY_KEYWORD_PREFIX;
-	}
-
-	public String getSECONDARY_KEYWORD_PREFIX() {
-		return SECONDARY_KEYWORD_PREFIX;
-	}
-
-	public QueryBuilderLogic getInterpreter() {
-		return interpreter;
-	}
-
-	public List<String> getFoundKeywords() {
-		return foundKeywords;
-	}
-
-	public void setFoundKeywords(List<String> foundKeywords) {
-		this.foundKeywords = foundKeywords;
-	}
-
-	public int getMAX_AMOUNT_OF_KEYWORDS_ACCEPTED() {
-		return MAX_AMOUNT_OF_KEYWORDS_ACCEPTED;
-	}
-
+//	private List<String> getCleanedInput() {
+//		return cleanedInput;
+//	}
+//
+//	private void setCleanedInput(List<String> cleanedInput) {
+//		this.cleanedInput = cleanedInput;
+//	}
+//
+//	private String[] getRecognizedWords() {
+//		return recognizedWords;
+//	}
+//
+//	private String getPRIMARY_KEYWORD_PREFIX() {
+//		return PRIMARY_KEYWORD_PREFIX;
+//	}
+//
+//	private String getSECONDARY_KEYWORD_PREFIX() {
+//		return SECONDARY_KEYWORD_PREFIX;
+//	}
+//
+//	private QueryBuilder getInterpreter() {
+//		return queryBuilder;
+//	}
+//
+//	private List<String> getFoundKeywords() {
+//		return foundKeywords;
+//	}
+//
+//	private void setFoundKeywords(List<String> foundKeywords) {
+//		this.foundKeywords = foundKeywords;
+//	}
+//
+//	private int getMAX_AMOUNT_OF_KEYWORDS_ACCEPTED() {
+//		return MAX_AMOUNT_OF_KEYWORDS_ACCEPTED;
+//	}
+//
+//	private Map<String, String> getSecondaryKeywords() {
+//		return secondaryKeywords;
+//	}
+//	
+//	private void setSecondaryKeywords(Map<String, String> secondaryKeywords) {
+//		this.secondaryKeywords = secondaryKeywords;
+//	}
+//
+//	private List<String> getFinalFlow() {
+//		return finalFlow;
+//	}
+//
+//	private void setFinalFlow(List<String> finalFlow) {
+//		this.finalFlow = finalFlow;
+//	}
+//
+//	private Map<String, String> getKeywords() {
+//		return keywords;
+//	}
+//
+//	private void setKeywords(Map<String, String> keywords) {
+//		this.keywords = keywords;
+//	}
+//
+//	private String[] getTableNamesArray() {
+//		return tableNamesArray;
+//	}
+//
+//	private void setTableNamesArray(String[] tableNamesArray) {
+//		this.tableNamesArray = tableNamesArray;
+//	}
+//
+//	private List<DbTableStructure> getTableList() {
+//		return tableList;
+//	}
+//
+//	private void setTableList(List<DbTableStructure> tableList) {
+//		this.tableList = tableList;
+//	}
 }

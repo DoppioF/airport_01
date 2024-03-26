@@ -40,10 +40,11 @@ import customUtils.exceptions.DBQueryException;
 import customUtils.exceptions.SearcherException;
 import customUtils.exceptions.UnforeseenException;
 import customUtils.exceptions.ValidatorException;
-import searcher.QueryBuilder;
+import searcher.QueryBuilderEx;
 import searcher.dto.DbTableStructure;
 import searcher.dto.QueryFromSearcher;
 import searcher.dto.QueryResultDto;
+import searcher.utils.SearcherUtils;
 import utils.constants.SearcherConstants;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -63,11 +64,11 @@ public class SearcherEjb implements SearcherEjbInterface{
 				throw new ValidatorException(GeneralConstants.MISSING_DATA);
 			}
 			
-			List<QueryFromSearcher> queries = new QueryBuilder(input
-															, SearcherConstants.PRIMARY_KEYWORDS
-															, SearcherConstants.TABLE_STRUCTURE_LIST)
-													.withTheseSecondaryKeywords(SearcherConstants.SECONDARY_KEYWORDS)
-													.buildQuery();
+			List<QueryFromSearcher> queries = new SearcherUtils()
+													.getQueriesBasedOnTheseKeywords(input
+																					, SearcherConstants.PRIMARY_KEYWORDS
+																					, SearcherConstants.TABLE_STRUCTURE_LIST
+																					, SearcherConstants.SECONDARY_KEYWORDS);
 			List<List<?>> resultEntitiesList = new ArrayList<>();
 			List<QueryResultDto> resultDtoList = new ArrayList<>();
 			SearcherCrud searcherCrud = new SearcherCrud();
