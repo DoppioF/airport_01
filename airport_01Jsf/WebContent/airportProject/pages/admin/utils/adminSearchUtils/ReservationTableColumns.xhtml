@@ -17,7 +17,7 @@
         <h:outputText value="#{utilsBean.formatDateFromLocalDate(reservation.date)}" />
     </p:column>
     <p:column headerText="Tratta">
-        <h:outputText value="#{reservation.cityDeparture} - #{reservation.cityArrival}" />
+        <h:outputText value="#{reservation.cityDepartureAirport} - #{reservation.cityArrivalAirport}" />
     </p:column>
     <p:column headerText="Tipo di pagamento">
         <h:outputText value="#{reservation.paymentMethod}" />

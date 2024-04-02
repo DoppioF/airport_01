@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.ejb.Local;
 
+import airport_01Client.utils.ClientException;
 import airport_01Model.dto.AirplaneDto;
 import airport_01Model.dto.AirportDto;
 import airport_01Model.dto.CustomerDto;
@@ -35,7 +36,7 @@ public interface CommonControllerEjbInterface {
 	FlightDto updateFlight(FlightDto flightDto) throws ValidatorException, DBQueryException, UnforeseenException;
 	FlightDto deleteFlight(FlightDto flightDto) throws ValidatorException, DBQueryException, UnforeseenException;
 	
-	ReservationDto insertReservation(ReservationDto reservationDto) throws ValidatorException, DBQueryException, UnforeseenException;
+	ReservationDto insertReservation(ReservationDto reservationDto) throws ValidatorException, DBQueryException, UnforeseenException, ClientException;
 	ResponseDto updateReservation(ReservationDto reservationDto) throws ValidatorException, DBQueryException, UnforeseenException;
 	ReservationDto deleteReservation(ReservationDto reservationDto) throws ValidatorException, DBQueryException, UnforeseenException;
 

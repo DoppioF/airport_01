@@ -17,6 +17,8 @@ import javax.ejb.Stateless;
 import airport_01.businessLogic.AirportProjectUtil;
 import airport_01.businessLogic.PriceManager;
 import airport_01.businessLogic.SeatsManager;
+import airport_01Client.services.Client;
+import airport_01Client.utils.ClientException;
 import airport_01Crud.crud.AirplaneCrud;
 import airport_01Crud.crud.AirportCrud;
 import airport_01Crud.crud.CustomerCrud;
@@ -49,6 +51,7 @@ import airport_01Model.models.entities.Ticket;
 import customUtils.classes.CustomStreamUtils;
 import customUtils.constants.strings.EjbConstants;
 import customUtils.constants.strings.GeneralConstants;
+import customUtils.constants.strings.RestConstants;
 import customUtils.exceptions.DBQueryException;
 import customUtils.exceptions.UnforeseenException;
 import customUtils.exceptions.ValidatorException;
@@ -155,7 +158,7 @@ public class CommonControllerEjb implements CommonControllerEjbInterface {
 	}
 
 	@Override
-	public ReservationDto insertReservation(ReservationDto reservationDto) throws ValidatorException, DBQueryException, UnforeseenException {
+	public ReservationDto insertReservation(ReservationDto reservationDto) throws ValidatorException, DBQueryException, UnforeseenException, ClientException {
 		System.out.println("CommonEjb insertReservation, reservation: ");
 		try {
 			List<String> errors = new Validator().reservationInsert(reservationDto);
@@ -168,7 +171,13 @@ public class CommonControllerEjb implements CommonControllerEjbInterface {
 			new LogicValidator().validateNumberOfTicketBasedOnAvailableSeats(foundFlightEntity.getAirplane().getSeats(), reservationDto.getTicketList().size(), errors);
 			errorsLogManager.dtoValidationErrorMessagesHandler(errors, CLASSNAME, "insertReservation", GeneralConstants.LOGIC_VALIDATOR_ERROR);
 			new CustomerCrud().findCustomerById(getEntityManager(), reservationDto.getIdCustomer());
-
+			
+			ModelsManagingUtils modelsManagingUtils = new ModelsManagingUtils();
+			String url = RestConstants.Airport_01Path.LOCALHOST_SPRINGBOOT
+							+ RestConstants.Airport_01Path.CLIENT
+							+ RestConstants.Airport_01Path.PAGAMENTO;
+			new Client().paymentRequest(modelsManagingUtils.pagamentoDtoFactory(reservationDto), url, "PUT");
+			
 			reservationDto.setDate(LocalDate.now());
 			reservationDto.setValidity(true);
 			ReservationCrud reservationCrud = new ReservationCrud();
@@ -177,7 +186,7 @@ public class CommonControllerEjb implements CommonControllerEjbInterface {
 			
 			System.out.println("ID PRENOTAZIONE INSERITA: " + insertedReservationEntity.getId());
 			
-			insertedReservationEntity.setTicketList(new ModelsManagingUtils()
+			insertedReservationEntity.setTicketList(modelsManagingUtils
 														.createTicketEntityListOfInsertedTickets(new TicketCrud()
 																								, reservationDto.getTicketList()
 																								, insertedReservationEntity
@@ -199,6 +208,10 @@ public class CommonControllerEjb implements CommonControllerEjbInterface {
 		} catch (DBQueryException e) {
 			rollbackEntityTransaction();
 			throw new DBQueryException(e.getMessage());
+		}catch (ClientException e) {
+			rollbackEntityTransaction();
+			e.printStackTrace();
+			throw new ClientException(e.getMessage());
 		} catch (Exception e) {
 			rollbackEntityTransaction();
 			e.printStackTrace();

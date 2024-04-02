@@ -118,7 +118,7 @@ public class QueryBuilder {
 									, tableList));
 			}
 		} else {
-			return queriesInfoFactory(chooseRightQuery(finalFlow, tableList, prefixSecondary, secondaryKeywords));
+			return queriesInfoFactory(chooseQuery(finalFlow, tableList, prefixSecondary, secondaryKeywords));
 		}
 	}
 	
@@ -223,6 +223,20 @@ public class QueryBuilder {
 								+ column.getKey()
 								+ calculateQuerySignAndPutValue(column.getValue(), value)
 								+ OR);
+			}
+		}
+	}
+	
+	private void appendNextWhereConditions(DbTableStructure table, List<String> finalFlow, StringBuilder builder) {
+		for (Entry<String, Class<?>> column : table.getColumns().entrySet()) {
+			for (String value : finalFlow) {
+				if (!stringValueOnColumnNumber(column.getValue(), value)) {
+					builder.append(table.getTableName()
+									+ "."
+									+ column.getKey()
+									+ calculateQuerySignAndPutValue(column.getValue(), value)
+									+ OR);
+				}
 			}
 		}
 	}
@@ -466,14 +480,14 @@ public class QueryBuilder {
 		throw new SearcherException(SearcherErrors.UNEXPECTED_ERROR);
 	}
 	
-	private String[] chooseRightQuery(List<String> finalFlow
-										, List<DbTableStructure> tableList
-										, final String prefixSecondary
-										, Map<String, String> secondaryKeywords) {
+	private String[] chooseQuery(List<String> finalFlow
+								, List<DbTableStructure> tableList
+								, final String prefixSecondary
+								, Map<String, String> secondaryKeywords) {
 		
 		int indexOfNextSecondaryKeyword = indexOfNextSecondaryKeyword(finalFlow, prefixSecondary, 0);
 		if (-1 == indexOfNextSecondaryKeyword) {
-			return queryAllDb(tableList, finalFlow.get(0));
+			return queryAllDb(tableList, finalFlow);
 		} else if (1 + indexOfNextSecondaryKeyword < finalFlow.size()) {
 			return queryOneColumn(tableList
 									, fromKeywordToColumnName(finalFlow.get(indexOfNextSecondaryKeyword)
@@ -521,7 +535,7 @@ public class QueryBuilder {
 		return null;
 	}
 	
-	private String[] queryAllDb(List<DbTableStructure> tableList, final String value) {
+	private String[] queryAllDb(List<DbTableStructure> tableList, List<String> finalFlow) {
 //		ESEMPIO DI ATOMIC INTEGER
 //		AtomicInteger numberOfQueries = new AtomicInteger(0);
 //		tableList.forEach(table -> {
@@ -529,22 +543,31 @@ public class QueryBuilder {
 //		});
 //		String[] queries = new String[numberOfQueries.get()];
 		
-		String[] queries = new String[tableList
-		                              .stream()
-		                              .mapToInt(table -> table.getColumns().size())
-		                              .sum()];
-		int index = 0;
+//		String[] queries = new String[tableList
+//		                              .stream()
+//		                              .mapToInt(table -> table.getColumns().size())
+//		                              .sum()];
+//		int index = 0;
+		StringBuilder builder = new StringBuilder();
 		for (DbTableStructure table : tableList) {
-			for (Entry<String, Class<?>> column : table.getColumns().entrySet()) {
-				queries[index] = genericQueryBuilder(ALL
-													, table.getTableName()
-													, column.getKey()
-													, column.getValue()
-													, value);
-				index++;
+			builder.append(GENERIC_QUERY_START + table.getTableName() + WHERE);
+			appendNextWhereConditions(table, finalFlow, builder);
+//			for (Entry<String, Class<?>> column : table.getColumns().entrySet()) {
+//				queries[index] = genericQueryBuilder(ALL
+//													, table.getTableName()
+//													, column.getKey()
+//													, column.getValue()
+//													, value);
+//				index++;
+//			}
+			if (builder.toString().endsWith(WHERE)) {
+				deleteFromBuilderEnd(builder, GENERIC_QUERY_START + table.getTableName() + WHERE); 
+			} else {
+				cleanQuery(builder);
+				appendSeparator(builder);
 			}
 		}
-		return queries;
+		return builder.toString().split(QUERY_SEPARATOR);
 	}
 	
 	private String genericQueryBuilder(final String whatToSelect

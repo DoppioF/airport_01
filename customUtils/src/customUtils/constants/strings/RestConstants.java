@@ -24,6 +24,9 @@ public class RestConstants {
 		public final static String FIND_FLIGHT_ROUTE_BY_AIRPORTS 	= "/findRoutesByAirports";
 		public final static String FIND_CUSTOMER_BY_ID				= "/findCustomerById";
 		public final static String SEARCH							= "/search";
+		public final static String CLIENT							= "/client";
+		public final static String PAGAMENTO						= "/paga";
+		public final static String LOCALHOST						= "http://localhost:8080";
+		public final static String LOCALHOST_SPRINGBOOT				= "http://localhost:8081";
 	}
-
 }

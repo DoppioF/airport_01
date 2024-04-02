@@ -213,7 +213,12 @@ public class Test {
 									+ currentWord;
 		}
 		String finalOutput = String.join("-", formattedArray);
-		System.out.println(finalOutput);
+		
+		Class<?> classe = Integer.class;
+		System.out.println(classe.getCanonicalName());
+		System.out.println(classe.getName());
+		System.out.println(classe.getSimpleName());
+		System.out.println(classe.getTypeName());
 	}
 	
 }

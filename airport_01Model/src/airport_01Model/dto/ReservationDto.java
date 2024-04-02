@@ -25,6 +25,8 @@ public class ReservationDto implements Serializable {
 	private String cityArrivalAirport;
 	private LocalDateTime departureDate;
 	private LocalDateTime arrivalDate;
+	private String checkingAccountNumber;
+	private Float totalToPay;
 	
 	private List<TicketDto> ticketList;
 	private Integer numberOfTickets;
@@ -178,7 +180,24 @@ public class ReservationDto implements Serializable {
 				+ ", nameDepartureAirport=" + nameDepartureAirport + ", cityDepartureAirport=" + cityDepartureAirport
 				+ ", nameArrivalAirport=" + nameArrivalAirport + ", cityArrivalAirport=" + cityArrivalAirport
 				+ ", departureDate=" + departureDate + ", arrivalDate=" + arrivalDate + ", numberOfTickets=" + numberOfTickets
-				+ ", ticketList=" + (null == ticketList ? 0 : ticketList.size()) + "]";
+				+ ", ticketList=" + (null == ticketList ? 0 : ticketList.size()) + ", checkingAccountNumber=" + checkingAccountNumber 
+				+", totalToPay=" + totalToPay + "]";
+	}
+
+	public String getCheckingAccountNumber() {
+		return checkingAccountNumber;
+	}
+
+	public void setCheckingAccountNumber(String checkingAccountNumber) {
+		this.checkingAccountNumber = checkingAccountNumber;
+	}
+
+	public Float getTotalToPay() {
+		return totalToPay;
+	}
+
+	public void setTotalToPay(Float totalToPay) {
+		this.totalToPay = totalToPay;
 	}
 
 	

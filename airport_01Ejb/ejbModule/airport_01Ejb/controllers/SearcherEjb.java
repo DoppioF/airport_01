@@ -98,7 +98,7 @@ public class SearcherEjb implements SearcherEjbInterface{
 											, SearcherCrud searcherCrud) throws Exception {
 		
 		for (QueryFromSearcher queryFromSearcher : queries) {
-			resultDtoList.add(new QueryResultDto(queryFromSearcher.getDtoType()));
+			
 			System.out.println("Query che dovrei lanciare: " + queryFromSearcher.getQuery());
 			if (!stringValueOnColumnNumber(queryFromSearcher.getQuery())) {
 				System.out.println("Query effettivamente lanciata: " + queryFromSearcher.getQuery());
@@ -108,9 +108,12 @@ public class SearcherEjb implements SearcherEjbInterface{
 																, queryFromSearcher.getQuery()
 																, queryFromSearcher.getEntityType());
 					System.out.println("risultati" + result);
-					if (!queryFromSearcher.getExecuteOnlyOneQuery() || !result.isEmpty()) {
+					if (!result.isEmpty()) {
 						resultEntitiesList.add(result);
-						break;
+						resultDtoList.add(new QueryResultDto(queryFromSearcher.getDtoType()));
+						if (queryFromSearcher.getExecuteOnlyOneQuery()) {
+							break;
+						}
 					}
 				} catch (DBQueryException e) {
 					rollbackEntityTransaction();

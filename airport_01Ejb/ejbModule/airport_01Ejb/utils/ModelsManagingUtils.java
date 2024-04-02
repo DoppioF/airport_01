@@ -9,6 +9,7 @@ import javax.persistence.EntityManager;
 
 import airport_01.businessLogic.AirportProjectUtil;
 import airport_01.businessLogic.PriceManager;
+import airport_01Client.models.PagamentoDto;
 import airport_01Crud.crud.CustomerCrud;
 import airport_01Crud.crud.FlightCrud;
 import airport_01Crud.crud.FlightRouteCrud;
@@ -18,6 +19,7 @@ import airport_01Ejb.utils.converters.DtoToModelConverter;
 import airport_01Ejb.utils.converters.ModelToDtoConverter;
 import airport_01Model.dto.FlightDto;
 import airport_01Model.dto.FlightRouteDto;
+import airport_01Model.dto.ReservationDto;
 import airport_01Model.dto.RoleDto;
 import airport_01Model.dto.TicketDto;
 import airport_01Model.models.entities.Customer;
@@ -175,4 +177,12 @@ public class ModelsManagingUtils {
 		};
 	}
 
+	public PagamentoDto pagamentoDtoFactory(ReservationDto reservationDto) {
+		PagamentoDto pagamentoDto = new PagamentoDto();
+		pagamentoDto.setCognomeCliente(reservationDto.getCustomerSurname());
+		pagamentoDto.setNomeCliente(reservationDto.getCustomerName());
+		pagamentoDto.setNumeroContoCorrente(reservationDto.getCheckingAccountNumber());
+		pagamentoDto.setTotaleDaPagare(reservationDto.getTotalToPay());
+		return pagamentoDto;
+	}
 }
